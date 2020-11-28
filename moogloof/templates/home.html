@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block headers %}
+<link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+{% endblock headers %}
+
+{% block content %}
+<div class="row mt-5">
+	<div class="card profile shadow">
+		<div class="card-body">
+			<h3 class="card-title">moogloof</h3>
+			<p class="card-text">Some sort of programmer. Can't figure out all those scary OS fanatics.</p>
+			<a href="http://jeju.dscloud.me/~ethan/moogloof/" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Please don't, noooooo">Kill</a>
+		</div>
+	</div>
+	<div class="card bg-dark col ml-3 shadow px-0">
+		<div class="card-body overflow-auto">
+<code>(venv) ~$ pip install tensorflow
+Exception: No lol
+(venv) ~$ akshfaksldgh</code>
+		</div>
+	</div>
+</div>
+<div class="row mt-4">
+	<div class="card px-0 shadow overflow-hidden col-1">
+		<img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" class="card-img" alt="github logo">
+		<div class="card-img-overlay">
+			<a class="stretched-link" href="https://github.com/moogloof"></a>
+		</div>
+	</div>
+	<div class="card p-2 shadow overflow-hidden col-1 ml-3" data-toggle="tooltip" data-placement="top" title="moogloof#3195">
+		<img src="https://discord.com/assets/f8389ca1a741a115313bede9ac02e2c0.svg" class="card-img" alt="github logo">
+		<div class="card-img-overlay">
+			<a class="stretched-link" href="#"></a>
+		</div>
+	</div>
+	<div class="card p-3 shadow overflow-hidden col-1 ml-3">
+		<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Osu%21Logo_%282015%29.svg/1200px-Osu%21Logo_%282015%29.svg.png" class="card-img" alt="github logo">
+		<div class="card-img-overlay">
+			<a class="stretched-link" href="https://osu.ppy.sh/users/19236347"></a>
+		</div>
+	</div>
+</div>
+{% endblock content %}
