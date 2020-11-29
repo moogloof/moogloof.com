@@ -1,7 +1,9 @@
 from flask import Flask
 
+from moogloof.config import SECRET_KEY
+
 app = Flask(__name__)
-app.secret_key = b'\t\xac+\x1a\x8e<*\xce\xac\x8e?"\xab\x12\xd8('
+app.secret_key = SECRET_KEY
 
 import moogloof.views
 
