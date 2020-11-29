@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from flask import render_template, session, redirect, url_for, request, abort, flash
 
 from moogloof.app import app
-from moogloof.db import posts
+from moogloof.db import get_db
 from moogloof.config import PASSWORD, LOGGED_ID
 
 
@@ -17,6 +17,8 @@ def merch():
 @app.route("/blog")
 @app.route("/blog/<title>")
 def blog(title=None):
+	posts = get_db().moogloof.posts
+
 	if not title:
 		post_q = posts.find().sort("date", -1)
 
@@ -40,7 +42,7 @@ def create_blog():
 				"content": request.form["content"]
 			}
 
-			posts.insert_one(new_post)
+			get_db().moogloof.posts.insert_one(new_post)
 
 			return redirect(url_for("blog", title=request.form["title"]))
 
