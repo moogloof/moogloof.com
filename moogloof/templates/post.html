@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
 
+{% block headers %}
+<link rel="stylesheet" href="{{ url_for('static', filename='post.css') }}">
+{% endblock headers %}
+
 {% block content %}
 <div class="row mx-0">
 	<div class="card mt-5 px-0 col shadow">
 		<div class="card-body">
 			<h3 class="card-title">{{ post.title }}</h3>
-			<p class="card-text">{{ post.content }}</p>
+			<p class="card-text content">{{ post.content }}</p>
 		</div>
 	</div>
 </div>
