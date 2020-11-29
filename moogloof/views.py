@@ -65,3 +65,9 @@ def login():
 
 	return render_template("login.html", header="login")
 
+@app.route("/logout")
+def logout():
+	session.pop("logged-id")
+
+	return render_template("logout.html", header="logout")
+

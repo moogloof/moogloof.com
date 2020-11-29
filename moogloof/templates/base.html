@@ -14,7 +14,7 @@
 		<div class="container-md px-0">
 			<nav class="navbar navbar-expand navbar-light bg-white">
 				<a class="navbar-brand" href="{{ url_for('home') }}">moogloof</a>
-				<ul class="navbar-nav">
+				<ul class="navbar-nav mr-auto">
 					<li class="nav-item">
 						<a class="nav-link" href="{{ url_for('blog') }}">blog</a>
 					</li>
@@ -22,6 +22,15 @@
 						<a class="nav-link" href="{{ url_for('merch') }}">merch</a>
 					</li>
 				</ul>
+				{% if logged_in() %}
+				<div class="dropdown">
+					<button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>
+					<div class="dropdown-menu" aria-labelledby="dropdownMenuBtn">
+						<a class="dropdown-item" href="{{ url_for('create_blog') }}">Create Post</a>
+						<a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+					</div>
+				</div>
+				{% endif %}
 			</nav>
 			{% block content %}{% endblock content %}
 		</div>

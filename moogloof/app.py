@@ -5,6 +5,6 @@ from moogloof.config import SECRET_KEY
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 
-import moogloof.commands
+import moogloof.context_processors
 import moogloof.views
 

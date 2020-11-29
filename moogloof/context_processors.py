@@ -1,7 +1,9 @@
 from datetime import timezone, datetime
 from dateutil.relativedelta import relativedelta
+from flask import session
 
 from moogloof.app import app
+from moogloof.config import LOGGED_ID
 
 
 time_vars = [
@@ -30,5 +32,8 @@ def util_processor():
 			except AttributeError:
 				pass
 
-	return dict(timeago=timeago)
+	def logged_in():
+		return "logged-id" in session and session["logged-id"] == LOGGED_ID
+
+	return dict(timeago=timeago, logged_in=logged_in)
 
