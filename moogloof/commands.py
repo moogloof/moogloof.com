@@ -20,7 +20,7 @@ def util_processor():
 				par = getattr(dt, var)
 
 				if par != 0:
-					return "{} {}".format(par, var)
+					return "{} {} ago".format(par, var)
 			except AttributeError:
 				pass
 
