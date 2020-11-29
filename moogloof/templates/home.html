@@ -5,7 +5,17 @@
 {% endblock headers %}
 
 {% block content %}
-<div class="row mt-5">
+{% if get_flashed_messages() %}
+{% for message in get_flashed_messages() %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+	{{ message }}
+	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		<span aria-hidden="true">&times;</span>
+	</button>
+</div>
+{% endfor %}
+{% endif %}
+<div class="row mt-5 mx-0">
 	<div class="card profile shadow">
 		<div class="card-body">
 			<h3 class="card-title">moogloof</h3>
@@ -21,7 +31,7 @@ Exception: No lol
 		</div>
 	</div>
 </div>
-<div class="row mt-4">
+<div class="row mt-4 mx-0">
 	<div class="card p-2 shadow overflow-hidden col-1">
 		<img src="{{ url_for('static', filename='Github-Logo.png') }}" class="card-img" alt="github logo">
 		<div class="card-img-overlay">
