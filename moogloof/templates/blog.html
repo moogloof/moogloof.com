@@ -1,12 +1,22 @@
 {% extends 'base.html' %}
 
+{% block headers %}
+<link rel="stylesheet" href="{{ url_for('static', filename='blog.css') }}">
+{% endblock headers %}
+
 {% block content %}
 {% for post in posts %}
 <div class="row">
-	<div class="card mt-5 px-0 col-6 shadow">
-		<div class="card-header">Jan. 2, 2020</div>
-		<div class="card-body">
-			<h3 class="card-title mb-0">{{ post.title }}</h3>
+	<div class="card mt-5 px-0 col-6 shadow overflow-hidden">
+		<div class="row no-gutters">
+			<div class="col-lg-3 background-gradient">
+			</div>
+			<div class="col-lg-9">
+				<div class="card-header">1 day ago</div>
+				<div class="card-body">
+					<h3 class="card-title mb-0">{{ post.title }}</h3>
+				</div>
+			</div>
 			<a class="stretched-link" href="{{ url_for('blog', title=post.title) }}"></a>
 		</div>
 	</div>
