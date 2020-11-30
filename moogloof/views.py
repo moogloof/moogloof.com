@@ -35,18 +35,28 @@ def blog(title=None):
 @app.route("/blog/create", methods=["GET", "POST"])
 def create_blog():
 	if "logged-id" in session and session["logged-id"] == LOGGED_ID:
+		saved = {}
+
 		if request.method == "POST":
-			new_post = {
-				"date": datetime.now(timezone.utc),
-				"title": request.form["title"],
-				"content": request.form["content"]
-			}
+			post_title = request.form["title"]
+			post_content = request.form["content"]
+			db = get_db()
 
-			get_db().moogloof.posts.insert_one(new_post)
+			if bool(db.moogloof.posts.find_one({"title": post_title})):
+				flash("Post with the same title exists.")
+				saved["content"] = post_content
+			else:
+				new_post = {
+					"date": datetime.now(timezone.utc),
+					"title": post_title,
+					"content": post_content
+				}
 
-			return redirect(url_for("blog", title=request.form["title"]))
+				db.moogloof.posts.insert_one(new_post)
 
-		return render_template("post_create.html")
+				return redirect(url_for("blog", title=post_title))
+
+		return render_template("post_create.html", saved=saved)
 	else:
 		abort(403)
 
