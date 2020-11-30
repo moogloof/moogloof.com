@@ -5,21 +5,23 @@
 {% endblock headers %}
 
 {% block content %}
-{% for post in posts %}
-<div class="row mx-0">
-	<div class="card mt-5 px-0 col-6 shadow overflow-hidden">
-		<div class="row no-gutters">
-			<div class="col-lg-3 background-gradient">
-			</div>
-			<div class="col-lg-9">
-				<div class="card-header">{{ timeago(post.date) }}</div>
-				<div class="card-body">
-					<h3 class="card-title mb-0">{{ post.title }}</h3>
+<div class="mb-5">
+	{% for post in posts %}
+	<div class="row mx-0">
+		<div class="card mt-5 px-0 col-6 shadow overflow-hidden">
+			<div class="row no-gutters">
+				<div class="col-lg-3 background-gradient">
 				</div>
+				<div class="col-lg-9">
+					<div class="card-header">{{ timeago(post.date) }}</div>
+					<div class="card-body">
+						<h3 class="card-title mb-0">{{ post.title }}</h3>
+					</div>
+				</div>
+				<a class="stretched-link" href="{{ url_for('blog', title=post.title) }}"></a>
 			</div>
-			<a class="stretched-link" href="{{ url_for('blog', title=post.title) }}"></a>
 		</div>
 	</div>
+	{% endfor %}
 </div>
-{% endfor %}
 {% endblock content %}
