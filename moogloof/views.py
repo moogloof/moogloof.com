@@ -38,11 +38,15 @@ def create_blog():
 		saved = {}
 
 		if request.method == "POST":
-			post_title = request.form["title"]
+			post_title = request.form["title"].strip()
 			post_content = request.form["content"]
 			db = get_db()
 
-			if bool(db.moogloof.posts.find_one({"title": post_title})):
+
+
+			if post_title == "":
+				flash("Your title can't just be whitespace bro.")
+			elif bool(db.moogloof.posts.find_one({"title": post_title})):
 				flash("Post with the same title exists.")
 				saved["content"] = post_content
 			else:
