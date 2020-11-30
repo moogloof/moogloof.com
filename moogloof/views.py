@@ -67,7 +67,8 @@ def login():
 
 @app.route("/logout")
 def logout():
-	session.pop("logged-id")
+	if "logged-id" in session:
+		session.pop("logged-id")
 
 	return render_template("logout.html", header="logout")
 
