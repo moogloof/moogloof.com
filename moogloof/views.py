@@ -94,3 +94,7 @@ def page_not_found(e):
 def page_not_authorized(e):
 	return render_template("403.html"), 403
 
+@app.errorhandler(500)
+def server_error_page(e):
+	return render_template("500.html"), 500
+
