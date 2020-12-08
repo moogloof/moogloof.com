@@ -41,8 +41,12 @@ def blog(title=None):
 			"title": title
 		})
 
-		# Render post
-		return render_template("post.html", header="post", post=post)
+		if not post:
+			# No post with title exists
+			abort(404)
+		else:
+			# Render post
+			return render_template("post.html", header="post", post=post)
 
 # Create blog page
 @app.route("/blog/create", methods=["GET", "POST"])
