@@ -1,11 +1,13 @@
 # Package imports
+from bson import json_util
 from datetime import datetime, timezone
-from flask import render_template, session, redirect, url_for, request, abort, flash
+from flask import render_template, session, redirect, url_for, request, abort, flash, jsonify
 
 # App imports
 from moogloof.app import app
 from moogloof.db import get_db
 from moogloof.config import PASSWORD, LOGGED_ID
+from moogloof.context_processors import util_processor
 
 
 # Home page
@@ -31,7 +33,7 @@ def blog(title=None):
 	# Different handling depending on title
 	if not title:
 		# Get the entire list of posts sorted by date
-		post_q = posts.find().sort("date", -1)
+		post_q = posts.find().sort("date", -1)[:3]
 
 		# Render all posts
 		return render_template("blog.html", header="blog", posts=post_q)
@@ -47,6 +49,37 @@ def blog(title=None):
 		else:
 			# Render post
 			return render_template("post.html", header="post", post=post)
+
+# Blog infinite scroll
+@app.route("/blog/load")
+def blog_load(title=None):
+	# Get the post collection
+	posts = get_db().moogloof.posts
+	# Get the posts size
+	post_size = posts.count()
+
+	# Get load count
+	count = int(request.args.get("c"))
+	# Size of load
+	load_size = 3
+
+	# Loaded array
+	loaded = []
+
+	if not count * load_size > post_size:
+		# Get loaded posts
+		loaded = posts.find().sort("date", -1)[(count * load_size):((count + 1) * load_size)]
+
+	timeago = util_processor()["timeago"]
+	loaded = list(loaded)
+
+	for d in loaded:
+		d["date"] = timeago(d["date"])
+
+	response_data = json_util.dumps(loaded)
+
+	# Return posts
+	return app.response_class(response=response_data, status=200, mimetype='application/json')
 
 # Create blog page
 @app.route("/blog/create", methods=["GET", "POST"])
