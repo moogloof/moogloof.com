@@ -16,7 +16,7 @@ def chats(hid=None):
 	messages = get_db().moogloof.messages
 
 	if not hid:
-		message_q = messages.find().sort("date", -1)
+		message_q = messages.find({"head": {"$exists": False, "$ne": True}}).sort("date", -1)
 
 		# Different handling depending on message id
 		return render_template("chat/chats.html", messages=message_q)
@@ -26,12 +26,17 @@ def chats(hid=None):
 			"_id": int(hid)
 		})
 
+		# Get replies
+		replies = messages.find({
+			"head": hid
+		}).sort("date", -1)
+
 		if not message:
 			# No message with id
 			abort(404)
 		else:
 			# Render message
-			return render_template("chat/message.html", header="message", message=message)
+			return render_template("chat/message.html", header="message", message=message, replies=replies)
 
 # Chat create form
 @app.route("/create", subdomain="chat", methods=["GET", "POST"])
@@ -56,12 +61,16 @@ def create_chat():
 		new_message = {
 			"date": datetime.now(timezone.utc),
 			"content": message_content,
-			"_id": new_id
+			"_id": new_id,
 		}
 
 		# Set author of message if given
 		if message_author != "":
 			new_message["author"] = message_author
+
+		# Check if message is reply or not
+		if "head" in request.form.keys():
+			new_message["head"] = request.form["head"]
 
 		# Validate message content
 		if message_content == "":
@@ -72,7 +81,7 @@ def create_chat():
 			db.moogloof.messages.insert_one(new_message)
 
 			# Redirect to the message page
-			return redirect(url_for("chats", hid=new_id))
+			return redirect(request.referrer)
 
 		# Redirect to chat page if invalid
 		return redirect(url_for("chats"))
