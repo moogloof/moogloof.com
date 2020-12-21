@@ -1,0 +1,36 @@
+{% extends 'chat/base.html' %}
+
+{% block content %}
+<a href="{{ url_for('chats') }}">&lt;&lt;&lt;back</a>
+<br>
+<br>
+{% if message.author %}
+<b>{{ message.author }}</b>
+{% else %}
+<b>anon</b>
+{% endif %}
+<p>{{ message.content }}</p>
+<hr>
+<div style="padding-left: 30px; padding-right: 30px;">
+	<form action="{{ url_for('create_chat') }}" method="POST">
+		<input type="text" name="head" style="display: none;" value="{{ message._id }}">
+		<input type="text" name="name" placeholder="Name (optional)">
+		<br>
+		<textarea placeholder="Content to message idk" rows="4" cols="50" name="content" required></textarea>
+		<br>
+		<button type="submit">reply</button>
+	</form>
+	<hr>
+	<div style="padding-left: 30px; padding-right: 30px;">
+		{% for reply in replies %}
+		{% if reply.author %}
+		<b>{{ reply.author }}</b>
+		{% else %}
+		<b>anon</b>
+		{% endif %}
+		<p>{{ reply.content }}</p>
+		<hr>
+		{% endfor %}
+	</div>
+</div>
+{% endblock content %}
