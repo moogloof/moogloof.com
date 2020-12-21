@@ -1,0 +1,13 @@
+{% extends 'chat/base.html' %}
+
+{% block content %}
+<a href="{{ url_for('chats') }}">&lt;&lt;&lt;back</a>
+<br>
+<br>
+{% if message.author %}
+<b>{{ message.author }}</b>
+{% else %}
+<b>anon</b>
+{% endif %}
+<p>{{ message.content }}</p>
+{% endblock content %}
