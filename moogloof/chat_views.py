@@ -10,7 +10,7 @@ from moogloof.db import get_db
 
 # Chat dashboard page
 @app.route("/", subdomain="chat")
-@app.route("/<hid>", subdomain="chat")
+@app.route("/c/<hid>", subdomain="chat")
 def chats(hid=None):
 	# Get the message collection
 	messages = get_db().moogloof.messages
