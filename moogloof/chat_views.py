@@ -9,8 +9,8 @@ from moogloof.db import get_db
 
 
 # Chat dashboard page
-@app.route("/", subdomain="chat")
-@app.route("/c/<hid>", subdomain="chat")
+@app.route("/chat")
+@app.route("/chat/c/<hid>")
 def chats(hid=None):
 	# Get the message collection
 	messages = get_db().moogloof.messages
@@ -39,7 +39,7 @@ def chats(hid=None):
 			return render_template("chat/message.html", header="message", message=message, replies=replies)
 
 # Chat create form
-@app.route("/create", subdomain="chat", methods=["GET", "POST"])
+@app.route("/chat/create", methods=["GET", "POST"])
 def create_chat():
 	if request.method == "POST":
 		# Clean the form
