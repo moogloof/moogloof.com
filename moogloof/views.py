@@ -2,6 +2,7 @@
 from bson import json_util
 from datetime import datetime, timezone
 from flask import render_template, session, redirect, url_for, request, abort, flash, jsonify
+import random
 
 # App imports
 from moogloof.app import app
@@ -13,8 +14,9 @@ from moogloof.context_processors import util_processor
 # Home page
 @app.route("/")
 def home():
+	random_phrases = ["Some sort of programmer. Can't figure out all those scary OS fanatics.", "Seven hundred seventy seven seventies have seventy seven seventy sevens.", "Years wasted watching anime. The mind degrades with each 300 chapter manga that is finished in one night.", "Struggling to learn x86 assembly.", "Building an OS called, idk loofOS.", "¡Me llame por la mañana para matarme!", "Really wants to travel to korea to meet with family.", "There is nothing more fulfilling in life than an interrupt handler that WORKS."]
 	# Render the homepage template
-	return render_template("home.html")
+	return render_template("home.html", random_phrase=random.choice(random_phrases))
 
 # Merch page
 @app.route("/merch")
