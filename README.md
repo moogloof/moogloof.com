@@ -1,4 +1,4 @@
 # Bruh
 Personal website.
 
-https://www.moogloof.com/
+https://moogloof.herokuapp.com
