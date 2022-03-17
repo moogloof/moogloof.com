@@ -1,1 +1,1 @@
-web: uwsgi app.ini
+web: gunicorn moogloof.app:app
