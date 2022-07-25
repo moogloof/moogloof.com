@@ -11,14 +11,14 @@
 <hr>
 <div style="padding-left: 30px; padding-right: 30px;">
 	{% for message in messages %}
-	<div style="width: 200px; overflow: hidden; text-overflow: ellipsis; word-break: keep-all; white-space: nowrap;">
+	<div style="">
 		{% if message.author %}
-		<b>{{ message.author }}</b>
+		<b style="width: 200px; overflow: hidden; text-overflow: ellipsis; word-break: keep-all; white-space: nowrap;">{{ message.author }}</b>
 		{% else %}
 		<b>anon</b>
 		{% endif %}
 		-
-		<a href="{{ url_for('chats', hid=message._id) }}">{{ message.content }}</a>
+		<a style="width: 200px; overflow: hidden; text-overflow: ellipsis; word-break: keep-all; white-space: nowrap;" href="{{ url_for('chats', hid=message._id) }}">{{ message.content }}</a>
 	</div>
 	<hr>
 	{% endfor %}
