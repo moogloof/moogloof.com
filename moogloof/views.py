@@ -1,5 +1,6 @@
 # Package imports
 from bson import json_util
+from bson.objectid import ObjectId
 from datetime import datetime, timezone
 from flask import render_template, session, redirect, url_for, request, abort, flash, jsonify
 import random
@@ -27,13 +28,13 @@ def merch():
 # Blog page
 # Blog post page
 @app.route("/blog")
-@app.route("/blog/<title>")
-def blog(title=None):
+@app.route("/blog/<_id>")
+def blog(_id=None):
 	# Get the post collection
 	posts = get_db().moogloof.posts
 
 	# Different handling depending on title
-	if not title:
+	if not _id:
 		# Get the entire list of posts sorted by date
 		post_q = posts.find().sort("date", -1)[:3]
 
@@ -42,7 +43,7 @@ def blog(title=None):
 	else:
 		# Get post with matching title
 		post = posts.find_one({
-			"title": title
+			"_id": ObjectId(_id)
 		})
 
 		if not post:
@@ -54,7 +55,7 @@ def blog(title=None):
 
 # Blog infinite scroll
 @app.route("/blog/load")
-def blog_load(title=None):
+def blog_load():
 	# Get the post collection
 	posts = get_db().moogloof.posts
 	# Get the posts size
@@ -77,6 +78,7 @@ def blog_load(title=None):
 
 	for d in loaded:
 		d["date"] = timeago(d["date"])
+		d["_id"] = str(d["_id"])
 
 	response_data = json_util.dumps(loaded)
 

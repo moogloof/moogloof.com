@@ -18,7 +18,7 @@
 						<h3 class="card-title mb-0">{{ post.title }}</h3>
 					</div>
 				</div>
-				<a class="stretched-link" href="{{ url_for('blog', title=post.title) }}"></a>
+				<a class="stretched-link" href="{{ url_for('blog', _id=post._id) }}"></a>
 			</div>
 		</div>
 	</div>
@@ -53,7 +53,7 @@ function loader() {
 
 				new_post.find(".card-header").text(data[i]["date"]);
 				new_post.find(".card-title").text(data[i]["title"]);
-				new_post.find(".stretched-link").attr("href", "/blog/" + data[i]["title"]);
+				new_post.find(".stretched-link").attr("href", "/blog/" + data[i]["_id"]);
 
 				posts.append(new_post);
 			}
