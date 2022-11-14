@@ -1,8 +1,8 @@
 import os
 
-MONGO_URI = os.environ["MONGO_URI"]
+MONGO_URI = os.environ.get("MONGO_URI")
 
-LOGGED_ID = os.environ["LOGGED_ID"]
-PASSWORD = os.environ["PASSWORD"]
+LOGGED_ID = os.environ.get("LOGGED_ID")
+PASSWORD = os.environ.get("PASSWORD")
 
-SECRET_KEY = os.environ["SECRET_KEY"]
+SECRET_KEY = os.environ.get("SECRET_KEY")

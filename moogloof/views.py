@@ -3,6 +3,7 @@ from bson import json_util
 from bson.objectid import ObjectId
 from datetime import datetime, timezone
 from flask import render_template, session, redirect, url_for, request, abort, flash, jsonify
+from werkzeug.security import check_password_hash
 import random
 
 # App imports
@@ -140,7 +141,7 @@ def login():
 		password = request.form["password"]
 
 		# Check if password is valid
-		if password == PASSWORD:
+		if check_password_hash(PASSWORD, password):
 			# Login user
 			session["logged-id"] = LOGGED_ID
 			flash("Cool, you logged in.")
