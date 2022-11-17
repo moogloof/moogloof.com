@@ -2,6 +2,7 @@
 from bson.objectid import ObjectId
 from datetime import datetime, timezone
 from flask import render_template, abort, request, url_for, redirect
+import pymongo
 
 # App imports
 from moogloof.app import app
@@ -29,7 +30,7 @@ def chats(hid=None):
 		# Get replies
 		replies = messages.find({
 			"head": hid
-		}).sort("date", -1)
+		}).sort("date", pymongo.DESCENDING)
 
 		if not message:
 			# No message with id

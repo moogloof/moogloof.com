@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block headers %}
+<link rel="stylesheet" href="{{ url_for('static', filename='projects.css') }}">
+{% endblock headers %}
+
+{% block content %}
+{% for project, updates in projects %}
+<div class="row mx-0 rounded mt-5 px-3 py-4 row-cols-2 row-cols-lg-3 d-flex" style="border-style: {{ project.border_style }}; border-width: 4px;">
+	<div class="px-3">
+		{% if project.background == "dark" %}
+		<div class="card h-100 shadow bg-dark text-white">
+		{% else %}
+		<div class="card h-100 bg-light text-black">
+		{% endif %}
+			<div class="card-body">
+				<h5 class="card-title">{{ project.title }}</h5>
+				<p class="card-text">{{ project.description }}</p>
+				<a href="{{ project.link }}" class="card-link">Project Page</a>
+			</div>
+		</div>
+	</div>
+	{% for update in updates %}
+	<div class="px-3">
+		{% if update.important %}
+		<div class="card h-100 bg-white text-black border-success">
+		{% else %}
+		<div class="card h-100 bg-white text-black">
+		{% endif %}
+			<div class="card-header d-flex justify-content-between">
+				{{ update.header }}
+				<small class="text-muted">{{ timeago(update.date) }}</small>
+			</div>
+			<div class="card-body">
+				<h6 class="card-title">{{ update.title }}</h6>
+				<p class="card-text">{{ update.description }}</p>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+{% endfor %}
+{% endblock content %}

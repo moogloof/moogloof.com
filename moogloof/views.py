@@ -4,6 +4,7 @@ from bson.objectid import ObjectId
 from datetime import datetime, timezone
 from flask import render_template, session, redirect, url_for, request, abort, flash, jsonify
 from werkzeug.security import check_password_hash
+import pymongo
 import random
 
 # App imports
@@ -131,6 +132,20 @@ def create_blog():
 	else:
 		# Return with error if not logged in
 		abort(403)
+
+# Project page
+@app.route("/projects")
+def projects():
+	# Get the projects
+	projects = get_db().moogloof.projects.find()
+	# Get updates
+	updates = get_db().moogloof.updates
+
+	# Get projects with 2 most recent udpates
+	projects = list(map(lambda x: [x, updates.find({"project": x["_id"]}, limit=2, sort=[("date", pymongo.DESCENDING)])], projects))
+
+	# Render projects
+	return render_template("projects.html", header="projects", projects=projects)
 
 # Login page
 @app.route("/login", methods=["GET", "POST"])
