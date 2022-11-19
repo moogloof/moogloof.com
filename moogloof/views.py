@@ -122,13 +122,70 @@ def create_blog():
 				}
 
 				# Insert post into collection
-				db.moogloof.posts.insert_one(new_post)
+				inserted_post = db.moogloof.posts.insert_one(new_post)
 
 				# Redirect to the page of the post
-				return redirect(url_for("blog", title=post_title))
+				return redirect(url_for("blog", _id=inserted_post.inserted_id))
 
 		# Render the create page template
 		return render_template("post_create.html", saved=saved)
+	else:
+		# Return with error if not logged in
+		abort(403)
+
+# Edit blog page
+@app.route("/blog/<_id>/update", methods=["GET", "POST"])
+def edit_blog(_id):
+	# Check if user is logged in
+	if "logged-id" in session and session["logged-id"] == LOGGED_ID:
+		# Get the post collection
+		posts = get_db().moogloof.posts
+
+		# Get post with matching title
+		post = posts.find_one({
+			"_id": ObjectId(_id)
+		})
+
+		if not post:
+			# No post with title exists
+			abort(404)
+		else:
+			saved = {
+				"_id": _id,
+				"title": post["title"],
+				"content": post["content"]
+			}
+
+			# Get post edit form
+			if request.method == "POST":
+				# Clean the form
+				post_title = request.form["title"].strip()
+				post_content = request.form["content"]
+
+				# Make content saved to form
+				saved["content"] = post_content
+
+				# Validate post title
+				if post_title == "":
+					# Alert user that title cannot be whitespace
+					flash("Your title can't just be whitespace bro.")
+				elif bool(posts.find_one({"title": post_title})) and post_title != post["title"]:
+					# Alert user that post with the same title already exists
+					flash("Post with the same title exists.")
+				else:
+					# Edit post
+					edit_post = {
+						"title": post_title,
+						"content": post_content
+					}
+
+					# Insert post into collection
+					posts.update_one({"_id": post["_id"]}, {"$set": edit_post})
+
+					# Redirect to the page of the post
+					return redirect(url_for("blog", _id=post["_id"]))
+			# Render post edit
+			return render_template("post_edit.html", header="edit post", saved=saved)
 	else:
 		# Return with error if not logged in
 		abort(403)
