@@ -1,6 +1,9 @@
 .card p {
+	/*
 	display: -webkit-box;
-	-webkit-line-clamp: 4;
+	-webkit-line-clamp: auto;
 	-webkit-box-orient: vertical;
+	*/
+	height: 0;
 	overflow: hidden;
 }

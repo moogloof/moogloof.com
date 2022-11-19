@@ -198,8 +198,9 @@ def projects():
 	# Get updates
 	updates = get_db().moogloof.updates
 
-	# Get projects with 2 most recent udpates
-	projects = list(map(lambda x: [x, updates.find({"project": x["_id"]}, limit=1, sort=[("date", pymongo.DESCENDING)])], projects))
+	# Get most recent and important update if any
+	# Get 3 most recent udpates
+	projects = list(map(lambda x: [x, updates.find_one({"project": x["_id"], "important": True}, sort=[("date", pymongo.DESCENDING)]), updates.find({"project": x["_id"]}, limit=3, sort=[("date", pymongo.DESCENDING)])], projects))
 
 	# Render projects
 	return render_template("projects.html", header="projects", projects=projects)
