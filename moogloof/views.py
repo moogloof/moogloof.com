@@ -4,6 +4,7 @@ from bson.objectid import ObjectId
 from datetime import datetime, timezone
 from flask import render_template, session, redirect, url_for, request, abort, flash, jsonify
 from werkzeug.security import check_password_hash
+from bson.errors import InvalidId
 import pymongo
 import random
 
@@ -44,9 +45,12 @@ def blog(_id=None):
 		return render_template("blog.html", header="blog", posts=post_q)
 	else:
 		# Get post with matching title
-		post = posts.find_one({
-			"_id": ObjectId(_id)
-		})
+		try:
+			post = posts.find_one({
+				"_id": ObjectId(_id)
+			})
+		except InvalidId:
+			abort(404)
 
 		if not post:
 			# No post with title exists
@@ -142,9 +146,12 @@ def edit_blog(_id):
 		posts = get_db().moogloof.posts
 
 		# Get post with matching title
-		post = posts.find_one({
-			"_id": ObjectId(_id)
-		})
+		try:
+			post = posts.find_one({
+				"_id": ObjectId(_id)
+			})
+		except InvalidId:
+			abort(404)
 
 		if not post:
 			# No post with title exists
@@ -204,6 +211,23 @@ def projects():
 
 	# Render projects
 	return render_template("projects.html", header="projects", projects=projects)
+
+# Updates page
+@app.route("/update/<_id>")
+def update(_id):
+	# Get the update
+	updates = get_db().moogloof.updates
+
+	# Get the thingy
+	try:
+		update_post = updates.find_one({
+			"_id": ObjectId(_id)
+		})
+	except InvalidId:
+		abort(404)
+
+	# Render update
+	return render_template("update.html", update=update_post)
 
 # Login page
 @app.route("/login", methods=["GET", "POST"])
