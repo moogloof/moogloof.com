@@ -212,6 +212,25 @@ def projects():
 	# Render projects
 	return render_template("projects.html", header="projects", projects=projects)
 
+# Project
+@app.route("/projects/<_id>/updates")
+def project_updates(_id):
+	# Get the project updates and the project
+	updates = get_db().moogloof.updates
+	projects_q = get_db().moogloof.projects
+
+	# Get the thingy
+	try:
+		project = projects_q.find_one({
+			"_id": ObjectId(_id)
+		})
+		proj_updates = updates.find({"project": ObjectId(_id)}, sort=[("date", pymongo.DESCENDING)])
+	except InvalidId:
+		abort(404)
+
+	# Render the project update list
+	return render_template("update_list.html", header="updates for {}".format(project["title"]), updates=proj_updates)
+
 # Updates page
 @app.route("/update/<_id>")
 def update(_id):
@@ -227,7 +246,7 @@ def update(_id):
 		abort(404)
 
 	# Render update
-	return render_template("update.html", update=update_post)
+	return render_template("update.html", header="update", update=update_post)
 
 # Login page
 @app.route("/login", methods=["GET", "POST"])
