@@ -13,5 +13,5 @@ md = Markdown(app, extensions=["fenced_code"])
 # App functions
 import moogloof.context_processors
 import moogloof.views
-import moogloof.chat_views
+# import moogloof.chat_views
 
