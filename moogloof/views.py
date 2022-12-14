@@ -229,7 +229,7 @@ def project_updates(_id):
 		abort(404)
 
 	# Render the project update list
-	return render_template("update_list.html", header="updates for {}".format(project["title"]), updates=proj_updates)
+	return render_template("update_list.html", header="updates for {}".format(project["title"]), updates=proj_updates, project=project)
 
 # Updates page
 @app.route("/update/<_id>")

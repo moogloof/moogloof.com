@@ -4,11 +4,13 @@
 {% endblock headers %}
 
 {% block content %}
+<h2 class="text-center my-5">{{ project.title }}</h2>
+<p class="w-50 mb-5 text-justify" style="margin: 0 auto;">{{ project.description }}</p>
 {% for update in updates %}
 {% if update.important %}
-<div class="card h-100 bg-white text-black border-success w-50 mt-5" style="margin: 0 auto;">
+<div class="card h-100 bg-white text-black border-success w-50 mb-5" style="margin: 0 auto;">
 {% else %}
-<div class="card h-100 bg-white text-black w-50 mt-5" style="margin: 0 auto;">
+<div class="card h-100 bg-white text-black w-50 mb-5" style="margin: 0 auto;">
 {% endif %}
 	<div class="card-header d-flex justify-content-between">
 		{{ update.header }}
