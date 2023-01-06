@@ -18,7 +18,7 @@ from moogloof.context_processors import util_processor
 # Home page
 @app.route("/")
 def home():
-	random_phrases = ["Some sort of programmer. Can't figure out all those scary OS fanatics.", "Seven hundred seventy seven seventies have seventy seven seventy sevens.", "Years wasted watching anime. The mind degrades with each 300 chapter manga that is finished in one night.", "Struggling to learn x86 assembly.", "Building an OS called, idk loofOS.", "¡Me llame por la mañana para matarme!", "Really wants to travel to korea to meet with family.", "There is nothing more fulfilling in life than an interrupt handler that WORKS."]
+	random_phrases = ["Some sort of programmer. OS development is more fun than it looks.", "Euler invented a crazy amount of laws.", "loofOS, 2 years in the making.", "Struggling but nevertheless learning x86 assembly.", "Building an OS called, idk loofOS.", "Microkernels seem really neat until you have to implement a bootloader for one.", "Really wants to travel to korea to meet with family.", "There is nothing more fulfilling in life than an interrupt handler that WORKS."]
 	# Render the homepage template
 	return render_template("home.html", random_phrase=random.choice(random_phrases))
 
