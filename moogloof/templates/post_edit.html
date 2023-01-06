@@ -25,6 +25,7 @@
 					<textarea class="form-control" id="post-content" rows="5" name="content" required>{{ saved['content'] }}</textarea>
 				</div>
 				<button type="submit" class="btn btn-outline-success">Save</button>
+				<a class="btn btn-outline-danger" href="{{ url_for('delete_blog', _id=saved['_id']) }}">Delete</a>
 				<a class="btn btn-outline-danger" href="{{ url_for('blog', _id=saved['_id']) }}">Cancel</a>
 			</form>
 		</div>

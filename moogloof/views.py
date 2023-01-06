@@ -197,6 +197,34 @@ def edit_blog(_id):
 		# Return with error if not logged in
 		abort(403)
 
+@app.route("/blog/<_id>/delete", methods=["GET"])
+def delete_blog(_id):
+	# Check if user is logged in
+	if "logged-id" in session and session["logged-id"] == LOGGED_ID:
+		# Get the post collection
+		posts = get_db().moogloof.posts
+
+		# Get post with matching id
+		try:
+			post = posts.find_one({
+				"_id": ObjectId(_id)
+			})
+		except InvalidId:
+			abort(404)
+
+		if not post:
+			# No post with id exists
+			abort(404)
+		else:
+			# Delete post
+			posts.delete_one({"_id": ObjectId(_id)})
+
+			# Redirect to the blog list
+			return redirect(url_for("blog"))
+	else:
+		# Return with error if not logged in
+		abort(403)
+
 # Project page
 @app.route("/projects")
 def projects():
