@@ -15,40 +15,43 @@
 </div>
 {% endfor %}
 {% endif %}
-<div class="row mt-5 mx-0">
-	<div class="card profile shadow">
-		<div class="card-body">
-			<h3 class="card-title">moogloof</h3>
-			<p class="card-text">{{ random_phrase }}</p>
-			<a href="mailto:ethansyun@icloud.com" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Click!">Contact Me</a>
+<div class="row mt-5 mx-0 mb-5">
+	<div class="col-5">
+		<div class="card profile shadow">
+			<div class="card-body">
+				<h3 class="card-title">moogloof</h3>
+				<p class="card-text">{{ random_phrase }}</p>
+				<a href="mailto:ethansyun@icloud.com" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Click!">Contact Me</a>
+			</div>
+		</div>
+		<div class="row mt-4 mx-0">
+			<div class="card p-2 shadow overflow-hidden col-2">
+				<img src="{{ url_for('static', filename='Github-Logo.png') }}" class="card-img" alt="github logo">
+				<div class="card-img-overlay">
+					<a class="stretched-link" href="https://github.com/moogloof"></a>
+				</div>
+			</div>
+			<div class="card p-2 shadow overflow-hidden col-2 ml-3" data-toggle="tooltip" data-placement="top" title="moogloof#3195">
+				<img src="{{ url_for('static', filename='Discord-Logo.svg') }}" class="card-img" alt="discord logo">
+				<div class="card-img-overlay">
+					<a class="stretched-link" href="#"></a>
+				</div>
+			</div>
+			<div class="card p-2 shadow overflow-hidden col-2 ml-3" data-toggle="tooltip" data-placement="top" title="ethansyun@icloud.com">
+				<img src="{{ url_for('static', filename='Email-Logo.png') }}" class="card-img" alt="email logo">
+				<div class="card-img-overlay">
+					<a class="stretched-link" href="mailto:ethansyun@icloud.com"></a>
+				</div>
+			</div>
 		</div>
 	</div>
 	<div class="card bg-dark col ml-3 shadow px-0">
 		<div class="card-body overflow-auto">
-<code>(venv) ~$ pip install tensorflow
-Exception: No lol
-(venv) ~$ akshfaksldgh</code>
+			<code class="text-wrap text-white"><span class="text-muted">~$</span> cat bio.txt<br>
+				Ethan Yun is a student currently attending <span class="text-danger">Stanford Online High School</span>. His main interests are <span class="text-warning">computer science, physics, and mathematics</span>. He is currently working on an from-scratch x86 operating system. He has plans to convert his raspberry pi into a network switch. In the past, he has worked on startups with friends. His hobbies are primarily tennis and trying new analog horror games.<br>
+<span id="blinking-text" class="text-muted">~$ </span></code>
 		</div>
 	</div>
 </div>
-<div class="row mt-4 mb-5 mx-0">
-	<div class="card p-2 shadow overflow-hidden col-1">
-		<img src="{{ url_for('static', filename='Github-Logo.png') }}" class="card-img" alt="github logo">
-		<div class="card-img-overlay">
-			<a class="stretched-link" href="https://github.com/moogloof"></a>
-		</div>
-	</div>
-	<div class="card p-2 shadow overflow-hidden col-1 ml-3" data-toggle="tooltip" data-placement="top" title="moogloof#3195">
-		<img src="{{ url_for('static', filename='Discord-Logo.svg') }}" class="card-img" alt="discord logo">
-		<div class="card-img-overlay">
-			<a class="stretched-link" href="#"></a>
-		</div>
-	</div>
-	<div class="card p-2 shadow overflow-hidden col-1 ml-3" data-toggle="tooltip" data-placement="top" title="ethansyun@icloud.com">
-		<img src="{{ url_for('static', filename='Email-Logo.png') }}" class="card-img" alt="email logo">
-		<div class="card-img-overlay">
-			<a class="stretched-link" href="mailto:ethansyun@icloud.com"></a>
-		</div>
-	</div>
-</div>
+
 {% endblock content %}

@@ -1,5 +1,20 @@
 .profile {
-	width: 30rem;
+}
+
+#blinking-text::after {
+	content: "";
+	width: 0.5em;
+	height: 1em;
+	background: #ffffff;
+	display: inline-block;
+	animation-name: blinking-cursor;
+	animation-duration: 1.5s;
+	animation-timing-function: steps(2);
+	animation-iteration-count: infinite;
+}
+
+@keyframes blinking-cursor {
+	0% { opacity: 0; }
 }
 
 code {
