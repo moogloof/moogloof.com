@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="row mx-0">
-	<div class="card my-5 px-0 col shadow">
+	<div class="card my-5 px-0 col-lg-8 mx-auto shadow">
 		<div class="card-header justify-content-between d-flex">{{ timeago(post.date) }}
 			{% if logged_in() %}
 			<a class="text-muted m-0" href="{{ url_for('edit_blog', _id=post._id) }}">
