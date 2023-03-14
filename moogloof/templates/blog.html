@@ -31,9 +31,10 @@
 </div>
 <script>
 var count = 1;
+var loadingInterval = null;
 
 $(document).ready(function() {
-	var loading = setInterval(loader, 500);
+	loadingInterval = setInterval(loader, 500);
 })
 
 function loader() {
@@ -43,7 +44,7 @@ function loader() {
 
 			if (data.length == 0) {
 				$("#loading-text").html("Done loading.");
-				clearInterval(loading);
+				clearInterval(loadingInterval);
 
 				return;
 			}
