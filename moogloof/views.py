@@ -18,7 +18,7 @@ from moogloof.context_processors import util_processor
 # Home page
 @app.route("/")
 def home():
-	random_phrases = ["Some sort of programmer. OS development is more fun than it looks.", "Euler invented a crazy amount of laws.", "loofOS, 2 years in the making.", "Struggling but nevertheless learning x86 assembly.", "Building an OS called, idk loofOS.", "Microkernels seem really neat until you have to implement a bootloader for one.", "Really wants to travel to korea to meet with family.", "There is nothing more fulfilling in life than an interrupt handler that WORKS."]
+	random_phrases = ["Some sort of programmer. OS development is more fun than it looks.", "Euler invented a crazy amount of laws.", "loofOS, 2 years in the making.", "Struggling but nevertheless learning x86 assembly.", "Building an OS called, idk loofOS.", "Microkernels seem really neat until you have to implement a bootloader for one.", "Really wants to travel to korea to meet with family.", "There is nothing better than a long walk at night with friends."]
 	# Render the homepage template
 	return render_template("home.html", random_phrase=random.choice(random_phrases))
 
@@ -260,8 +260,8 @@ def projects():
 	return render_template("projects.html", header="projects", projects=projects)
 
 # Project
-@app.route("/projects/<_id>/updates")
-def project_updates(_id):
+@app.route("/projects/<_id>")
+def project_page(_id):
 	# Get the project updates and the project
 	updates = get_db().moogloof.updates
 	projects_q = get_db().moogloof.projects
@@ -276,7 +276,7 @@ def project_updates(_id):
 		abort(404)
 
 	# Render the project update list
-	return render_template("update_list.html", header="updates for {}".format(project["title"]), updates=proj_updates, project=project)
+	return render_template("project_page.html", header="project page for {}".format(project["title"]), updates=proj_updates, project=project)
 
 # Updates page
 @app.route("/update/<_id>")

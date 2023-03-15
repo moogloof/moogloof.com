@@ -18,7 +18,7 @@
 	</div>
 	<div class="card-body d-flex flex-column">
 		<h6 class="card-title">{{ update.title }}</h6>
-		<p class="card-text flex-grow-1">{{ update.description }}</p>
+		<p class="card-text flex-grow-1">{{ update.description|markdown }}</p>
 	</div>
 </div>
 {% endfor %}

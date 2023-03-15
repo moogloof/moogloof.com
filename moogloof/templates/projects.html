@@ -17,8 +17,7 @@
 				<h5 class="card-title">{{ project.title }}</h5>
 				<p class="card-text flex-grow-1">{{ project.description }}</p>
 				<div class="mx-0 row justify-content-between">
-					<a href="{{ project.link }}" class="card-link mt-auto text-center">Project Page</a>
-					<a href="{{ url_for('project_updates', _id=project._id) }}" class="card-link mt-auto text-center">Updates</a>
+					<a href="{{ url_for('project_page', _id=project._id) }}" class="card-link mt-auto text-center">Project Page</a>
 				</div>
 			</div>
 		</div>
