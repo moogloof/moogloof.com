@@ -10,9 +10,14 @@
 	<div class="row mx-0">
 		<div class="card mt-5 px-0 col shadow overflow-hidden">
 			<div class="row no-gutters">
-				<div class="col-lg-2 background-gradient">
+				{% if 'thumbnail' in post %}
+				<div class="col-lg-2">
+					<img class="img-fluid rounded-start" src="{{ post.thumbnail }}">
 				</div>
 				<div class="col-lg-10">
+				{% else %}
+				<div class="col">
+				{% endif %}
 					<div class="card-header">{{ timeago(post.date) }}</div>
 					<div class="card-body">
 						<h3 class="card-title mb-0">{{ post.title }}</h3>
@@ -29,7 +34,41 @@
 		<span class="sr-only">Loading...</span>
 	</div>
 </div>
+
 <script>
+var no_thumbnail_post = `
+<div id="no-thumbnail-post" class="row mx-0">
+	<div class="card mt-5 px-0 col shadow overflow-hidden">
+		<div class="row no-gutters">
+			<div class="col">
+				<div class="card-header"></div>
+				<div class="card-body">
+					<h3 class="card-title mb-0"></h3>
+				</div>
+			</div>
+			<a class="stretched-link" href=""></a>
+		</div>
+	</div>
+</div>
+`;
+var thumbnail_post = `
+<div id="thumbnail-post" class="row mx-0">
+	<div class="card mt-5 px-0 col shadow overflow-hidden">
+		<div class="row no-gutters">
+			<div class="col-lg-2">
+				<img class="img-fluid rounded-start" src="">
+			</div>
+			<div class="col-lg-10">
+				<div class="card-header"></div>
+				<div class="card-body">
+					<h3 class="card-title mb-0"></h3>
+				</div>
+			</div>
+			<a class="stretched-link" href=""></a>
+		</div>
+	</div>
+</div>
+`;
 var count = 1;
 var loadingInterval = null;
 
@@ -50,12 +89,19 @@ function loader() {
 			}
 
 			for (var i = 0; i < data.length; i++) {
-				var new_post = $(".row").first().clone();
+				var new_post = undefined;
+				console.log(data[i]);
+				if (typeof data[i]["thumbnail"] === "undefined") {
+					new_post = $(no_thumbnail_post);
 
+				} else {
+					new_post = $(thumbnail_post);
+
+					new_post.find("img").attr("src", data[i]["thumbnail"]);
+				}
 				new_post.find(".card-header").text(data[i]["date"]);
 				new_post.find(".card-title").text(data[i]["title"]);
 				new_post.find(".stretched-link").attr("href", "/blog/" + data[i]["_id"]);
-
 				posts.append(new_post);
 			}
 		})

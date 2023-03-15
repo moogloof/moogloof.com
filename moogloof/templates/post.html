@@ -18,6 +18,9 @@
 		</div>
 		<div class="card-body">
 			<h3 class="card-title">{{ post.title }}</h3>
+			{% if 'thumbnail' in post %}
+			<img src="{{ post.thumbnail }}">
+			{% endif %}
 			<p class="card-text content lh-base">{{ post.content|markdown }}</p>
 		</div>
 	</div>

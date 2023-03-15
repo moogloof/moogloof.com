@@ -104,6 +104,7 @@ def create_blog():
 			# Clean the form
 			post_title = request.form["title"].strip()
 			post_content = request.form["content"]
+			post_thumb = request.form["thumbnail"].strip()
 			# Get the database
 			db = get_db()
 
@@ -124,6 +125,10 @@ def create_blog():
 					"title": post_title,
 					"content": post_content
 				}
+
+				# Add a thumbnail if specified
+				if post_thumb:
+					new_post["thumbnail"] = post_thumb
 
 				# Insert post into collection
 				inserted_post = db.moogloof.posts.insert_one(new_post)
@@ -163,11 +168,16 @@ def edit_blog(_id):
 				"content": post["content"]
 			}
 
+			# Get thumbnail if saved
+			if "thumbnail" in post:
+				saved["thumbnail"] = post["thumbnail"]
+
 			# Get post edit form
 			if request.method == "POST":
 				# Clean the form
 				post_title = request.form["title"].strip()
 				post_content = request.form["content"]
+				post_thumbnail = request.form["thumbnail"].strip()
 
 				# Make content saved to form
 				saved["content"] = post_content
@@ -186,8 +196,17 @@ def edit_blog(_id):
 						"content": post_content
 					}
 
+					# Unset
+					edit_post_unset = {}
+
+					# Edit thumbnail if one is added
+					if post_thumbnail:
+						edit_post["thumbnail"] = post_thumbnail
+					else:
+						edit_post_unset["thumbnail"] = ""
+
 					# Insert post into collection
-					posts.update_one({"_id": post["_id"]}, {"$set": edit_post})
+					posts.update_one({"_id": post["_id"]}, {"$set": edit_post, "$unset": edit_post_unset})
 
 					# Redirect to the page of the post
 					return redirect(url_for("blog", _id=post["_id"]))
