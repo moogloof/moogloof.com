@@ -77,7 +77,7 @@ def blog_load():
 
 	if not count * load_size > post_size:
 		# Get loaded posts
-		loaded = posts.find().sort("date", -1)[(count * load_size):((count + 1) * load_size)]
+		loaded = posts.find().sort("date", -1).skip(count * load_size).limit(load_size)
 
 	timeago = util_processor()["timeago"]
 	loaded = list(loaded)
