@@ -57,7 +57,7 @@ def blog(_id=None):
 			abort(404)
 		else:
 			# Render post
-			return render_template("post.html", header="post", post=post)
+			return render_template("post.html", header=post["title"], post=post)
 
 # Blog infinite scroll
 @app.route("/blog/load")
