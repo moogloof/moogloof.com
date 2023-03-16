@@ -1,16 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% if get_flashed_messages() %}
-{% for message in get_flashed_messages() %}
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-	{{ message }}
-	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-		<span aria-hidden="true">&times;</span>
-	</button>
-</div>
-{% endfor %}
-{% endif %}
 <div class="row">
 	<div class="card shadow col-lg-8 mx-auto my-5">
 		<div class="card-body">

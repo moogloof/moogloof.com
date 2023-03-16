@@ -5,16 +5,6 @@
 {% endblock headers %}
 
 {% block content %}
-{% if get_flashed_messages() %}
-{% for message in get_flashed_messages() %}
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-	{{ message }}
-	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-		<span aria-hidden="true">&times;</span>
-	</button>
-</div>
-{% endfor %}
-{% endif %}
 <div class="row mt-5 mx-0 mb-5">
 	<div class="col-5">
 		<div class="card profile shadow">
