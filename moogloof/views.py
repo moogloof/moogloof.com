@@ -319,6 +319,66 @@ def create_project():
 		# Return with error if not logged in
 		abort(403)
 
+# Edit blog page
+@app.route("/projects/<_id>/update", methods=["GET", "POST"])
+def edit_project(_id):
+	# Check if user is logged in
+	if "logged-id" in session and session["logged-id"] == LOGGED_ID:
+		# Get the post collection
+		projects = get_db().moogloof.projects
+
+		# Get post with matching title
+		try:
+			project = projects.find_one({
+				"_id": ObjectId(_id)
+			})
+		except InvalidId:
+			abort(404)
+
+		if not project:
+			# No post with title exists
+			abort(404)
+		else:
+			saved = {
+				"_id": _id,
+				"title": project["title"],
+				"description": project["description"]
+			}
+
+			# Get post edit form
+			if request.method == "POST":
+				# Clean the form
+				project_title = request.form["title"].strip()
+				project_description = request.form["description"]
+
+				# Make content saved to form
+				saved["description"] = project_description
+
+				# Validate project title
+				if project_title == "":
+					# Alert user that title cannot be whitespace
+					flash("Your title can't just be whitespace bro.")
+				elif bool(projects.find_one({"title": project_title})) and project_title != project["title"]:
+					# Alert user that projects with the same title already exists
+					flash("Project with the same title exists.")
+				else:
+					# Edit post
+					edit_project = {
+						"title": project_title,
+						"description": project_description
+					}
+
+					# Insert post into collection
+					projects.update_one({"_id": project["_id"]}, {"$set": edit_project})
+
+					# Redirect to the page of the post
+					return redirect(url_for("projects", _id=project["_id"]))
+			# Render post edit
+			return render_template("project_edit.html", header="edit project", saved=saved)
+	else:
+		# Return with error if not logged in
+		abort(403)
+
 # Updates page
 @app.route("/update/<_id>")
 def update(_id):
