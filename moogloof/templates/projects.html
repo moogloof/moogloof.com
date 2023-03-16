@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 
 {% block headers %}
-<link rel="stylesheet" href="{{ url_for('static', filename='projects.css') }}">
 {% endblock headers %}
 
 {% block content %}
 {% for project, important_update in projects %}
-<div class="row border mx-0 rounded mt-5 px-3 py-4 row-cols-2 row-cols-lg-3 d-flex">
-	<div class="px-3">
+<div class="row border mx-0 rounded mt-5 px-3 py-4 d-flex">
+	{% if important_update is none %}
+	<div class="px-3 col">
+	{% else %}
+	<div class="px-3 col-3 col-lg-4">
+	{% endif %}
 		<div class="card h-100 bg-light text-black">
 			<div class="card-body d-flex flex-column">
 				<h5 class="card-title">{{ project.title }}</h5>
@@ -19,7 +22,7 @@
 		</div>
 	</div>
 	{% if important_update is not none %}
-	<div class="px-3 d-none d-lg-block">
+	<div class="px-3 d-none d-lg-block col">
 		<div class="card h-100 bg-white text-black border-success">
 			<div class="card-header d-flex justify-content-between">
 				{{ important_update.header }}
@@ -28,15 +31,6 @@
 			<div class="card-body d-flex flex-column">
 				<h6 class="card-title">{{ important_update.title }}</h6>
 				<p class="card-text flex-grow-1">{{ important_update.description }}</p>
-			</div>
-		</div>
-	</div>
-	{% else %}
-	<div class="px-3 d-none d-lg-block">
-		<div class="card h-100 bg-white text-black">
-			<div class="card-header d-flex justify-content-between">
-			</div>
-			<div class="card-body d-flex flex-column">
 			</div>
 		</div>
 	</div>
