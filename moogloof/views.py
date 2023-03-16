@@ -246,37 +246,78 @@ def delete_blog(_id):
 
 # Project page
 @app.route("/projects")
-def projects():
-	# Get the projects
-	projects = get_db().moogloof.projects.find()
+@app.route("/projects/<_id>")
+def projects(_id=None):
 	# Get updates
 	updates = get_db().moogloof.updates
 
-	# Get most recent and important update if any
-	# Get 3 most recent udpates
-	projects = list(map(lambda x: [x, updates.find_one({"project": x["_id"], "important": True}, sort=[("date", pymongo.DESCENDING)]), updates.find({"project": x["_id"]}, limit=3, sort=[("date", pymongo.DESCENDING)])], projects))
-
-	# Render projects
-	return render_template("projects.html", header="projects", projects=projects)
-
-# Project
-@app.route("/projects/<_id>")
-def project_page(_id):
 	# Get the project updates and the project
-	updates = get_db().moogloof.updates
 	projects_q = get_db().moogloof.projects
 
-	# Get the thingy
-	try:
-		project = projects_q.find_one({
-			"_id": ObjectId(_id)
-		})
-		proj_updates = updates.find({"project": ObjectId(_id)}, sort=[("date", pymongo.DESCENDING)])
-	except InvalidId:
-		abort(404)
+	if not _id:
+		# Get most recent and important update if any
+		# Get 3 most recent udpates
+		projects_q = list(map(lambda x: [x, updates.find_one({"project": x["_id"], "important": True}, sort=[("date", pymongo.DESCENDING)])], projects_q.find()))
 
-	# Render the project update list
-	return render_template("project_page.html", header="project page for {}".format(project["title"]), updates=proj_updates, project=project)
+		# Render projects
+		return render_template("projects.html", header="projects", projects=projects_q)
+	else:
+		# Get the thingy
+		try:
+			project = projects_q.find_one({
+				"_id": ObjectId(_id)
+			})
+			proj_updates = updates.find({"project": ObjectId(_id)}, sort=[("date", pymongo.DESCENDING)])
+		except InvalidId:
+			abort(404)
+
+		# Render the project update list
+		return render_template("project_page.html", header="project page for {}".format(project["title"]), updates=proj_updates, project=project)
+
+# Create project page
+@app.route("/projects/create", methods=["GET", "POST"])
+def create_project():
+	# Check if user is logged in
+	if "logged-id" in session and session["logged-id"] == LOGGED_ID:
+		# Saved is the form data to keep in case of invalid inputs
+		saved = {}
+
+		# Check if the form was submitted
+		if request.method == "POST":
+			# Clean the form
+			project_title = request.form["title"].strip()
+			project_description = request.form["description"]
+			# Get the database
+			db = get_db()
+
+			# Make content saved to form
+			saved["description"] = project_description
+
+			# Validate post title
+			if project_title == "":
+				# Alert user that title cannot be whitespace
+				flash("Your title can't just be whitespace bro.")
+			elif bool(db.moogloof.projects.find_one({"title": project_title})):
+				# Alert user that project with the same title already exists
+				flash("Project with the same title exists.")
+			else:
+				# Create a new project
+				new_project = {
+					"title": project_title,
+					"description": project_description
+				}
+
+				# Insert project into collection
+				inserted_project = db.moogloof.projects.insert_one(new_project)
+
+				# Redirect to the page of the post
+				return redirect(url_for("projects", _id=inserted_project.inserted_id))
+
+		# Render the create page template
+		return render_template("project_create.html", saved=saved)
+	else:
+		# Return with error if not logged in
+		abort(403)
 
 # Updates page
 @app.route("/update/<_id>")

@@ -5,19 +5,15 @@
 {% endblock headers %}
 
 {% block content %}
-{% for project, important_update, updates in projects %}
-<div class="row mx-0 rounded mt-5 px-3 py-4 row-cols-2 row-cols-lg-3 d-flex" style="border-style: {{ project.border_style }}; border-width: 4px;">
+{% for project, important_update in projects %}
+<div class="row border mx-0 rounded mt-5 px-3 py-4 row-cols-2 row-cols-lg-3 d-flex">
 	<div class="px-3">
-		{% if project.background == "dark" %}
-		<div class="card h-100 shadow bg-dark text-white">
-		{% else %}
 		<div class="card h-100 bg-light text-black">
-		{% endif %}
 			<div class="card-body d-flex flex-column">
 				<h5 class="card-title">{{ project.title }}</h5>
 				<p class="card-text flex-grow-1">{{ project.description }}</p>
 				<div class="mx-0 row justify-content-between">
-					<a href="{{ url_for('project_page', _id=project._id) }}" class="card-link mt-auto text-center">Project Page</a>
+					<a href="{{ url_for('projects', _id=project._id) }}" class="card-link mt-auto text-center">Project Page</a>
 				</div>
 			</div>
 		</div>
@@ -39,32 +35,12 @@
 	<div class="px-3 d-none d-lg-block">
 		<div class="card h-100 bg-white text-black">
 			<div class="card-header d-flex justify-content-between">
-				{{ updates[0].header }}
-				<small class="text-muted">{{ timeago(updates[0].date) }}</small>
 			</div>
 			<div class="card-body d-flex flex-column">
-				<h6 class="card-title">{{ updates[0].title }}</h6>
-				<p class="card-text flex-grow-1">{{ updates[0].description }}</p>
 			</div>
 		</div>
 	</div>
 	{% endif %}
-	<div class="list-group rounded-0 h-100 px-3">
-		{% for update in updates %}
-		{% if update.important %}
-		<a href="{{ url_for('update', _id=update._id) }}" class="list-group-item list-group-item-action bg-success text-white">
-		{% else %}
-		<a href="{{ url_for('update', _id=update._id) }}" class="list-group-item list-group-item-action">
-		{% endif %}
-			<div class="d-flex w-100 justify-content-between">
-				{{ update.header }}
-				<small class="text-muted">{{ timeago(update.date) }}</small>
-			</div>
-			<h5 class="mb-1 overflow-hidden text-nowrap" style="text-overflow: ellipsis;">{{ update.title }}</h5>
-			<p class="mb-0 overflow-hidden text-nowrap" style="text-overflow: ellipsis;">{{ update.description }}</p>
-		</a>
-		{% endfor %}
-	</div>
 </div>
 {% endfor %}
 {% endblock content %}
