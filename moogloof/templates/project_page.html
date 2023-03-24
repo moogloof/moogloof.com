@@ -4,8 +4,12 @@
 {% endblock headers %}
 
 {% block content %}
+{% if logged_in() %}
 <div class="d-flex justify-content-between my-5 w-50 mx-auto">
 	<p></p>
+{% else %}
+<div class="my-5 w-50 mx-auto">
+{% endif %}
 	<h2 class="text-center">{{ project.title }}</h2>
 	{% if logged_in() %}
 	<a class="text-muted text-center" href="{{ url_for('edit_project', _id=project._id) }}">
