@@ -3,7 +3,11 @@
 	display: -webkit-box;
 	-webkit-line-clamp: auto;
 	-webkit-box-orient: vertical;
-	*/
 	height: 0;
 	overflow: hidden;
+	*/
+}
+
+img {
+	width: 100%;
 }
