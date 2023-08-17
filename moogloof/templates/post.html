@@ -25,4 +25,49 @@
 		</div>
 	</div>
 </div>
+{% for comment in comments %}
+{% if comment.approved %}
+<div class="row mx-0">
+	<div class="card mb-5 px-0 col-lg-8 mx-auto shadow">
+		<div class="card-header justify-content-between d-flex">{{ timeago(comment.date) }}</div>
+		<div class="card-body">
+			{% if comment.website == '' %}
+			<h5 class="card-title">{{ comment.name }}</h5>
+			{% else %}
+			<a href="{{ comment.website }}"><h5 class="card-title">{{ comment.name }}</h5></a>
+			{% endif %}
+			<p class="card-text content lh-base">{{ comment.content }}</p>
+		</div>
+	</div>
+</div>
+{% endif %}
+{% endfor %}
+<div class="row mx-0">
+	<div class="card mb-5 px-0 col-lg-8 mx-auto shadow">
+		<div class="card-body">
+			<h5 class="card-title">Comment</h5>
+			<p class="card-text content lh-base">The guidelines of posting are rather simple. Be respectful and engage honestly. I am not against swearing, but avoid using slurs or generally hateful messages. Use your common sense. <b>Comments will not be posted until they are approved by an admin.</b></p>
+			<form method="POST" action="{{ url_for('comment_blog', _id=post._id) }}">
+				<div class="form-group">
+					<label for="comment-name">Name</label>
+					<input  type="text" class="form-control" id="comment-name" name="name" pattern="^[a-zA-Z1-9].*" required>
+				</div>
+				<div class="form-group">
+					<label for="comment-email">Email</label>
+					<input  type="email" class="form-control" id="comment-email" name="email" required>
+					<small id="emailHelp" class="form-text text-muted">Your email will not be shared or displayed.</small>
+				</div>
+				<div class="form-group">
+					<label for="comment-website">Website</label>
+					<input type="url" class="form-control" id="comment-website" name="website">
+				</div>
+				<div class="form-group">
+					<label for="comment-content">Content</label>
+					<textarea class="form-control" id="comment-content" rows="5" name="content" required></textarea>
+				</div>
+				<button type="submit" class="btn btn-outline-success">Post</button>
+			</form>
+		</div>
+	</div>
+</div>
 {% endblock content %}

@@ -33,20 +33,20 @@ def merch():
 @app.route("/blog")
 @app.route("/blog/<_id>")
 def blog(_id=None):
-	# Get the post collection
-	posts = get_db().moogloof.posts
+	# Get db
+	db = get_db()
 
 	# Different handling depending on title
 	if not _id:
 		# Get the entire list of posts sorted by date
-		post_q = posts.find().sort("date", -1)[:3]
+		post_q = db.moogloof.posts.find().sort("date", -1)[:3]
 
 		# Render all posts
 		return render_template("blog.html", header="blog", posts=post_q)
 	else:
 		# Get post with matching title
 		try:
-			post = posts.find_one({
+			post = db.moogloof.posts.find_one({
 				"_id": ObjectId(_id)
 			})
 		except InvalidId:
@@ -56,8 +56,11 @@ def blog(_id=None):
 			# No post with title exists
 			abort(404)
 		else:
+			# Get comments corresponding to post
+			comments = db.moogloof.comments.find({"post": ObjectId(_id)}, sort=[("date", pymongo.ASCENDING)])
+
 			# Render post
-			return render_template("post.html", header=post["title"], post=post)
+			return render_template("post.html", header=post["title"], post=post, comments=comments)
 
 # Blog infinite scroll
 @app.route("/blog/load")
@@ -243,6 +246,48 @@ def delete_blog(_id):
 	else:
 		# Return with error if not logged in
 		abort(403)
+
+# Comment on blog
+@app.route("/blog/<_id>/comment", methods=["POST"])
+def comment_blog(_id):
+	# Get the database
+	db = get_db()
+
+	# Get post with matching id
+	try:
+		post = db.moogloof.posts.find_one({
+			"_id": ObjectId(_id)
+		})
+	except InvalidId:
+		abort(404)
+
+	if not post:
+		# No post with id exists
+		abort(404)
+	else:
+		# Clean form data
+		comment_name = request.form["name"].strip()
+		comment_email = request.form["email"]
+		comment_website = request.form["website"]
+		comment_content = request.form["content"]
+
+		# Make new comment
+		new_comment = {
+			"post": ObjectId(_id),
+			"date": datetime.now(timezone.utc),
+			"name": comment_name,
+			"email": comment_email,
+			"website": comment_website,
+			"content": comment_content,
+			"approved": False
+		}
+
+		# Insert new comment
+		inserted_comment = db.moogloof.comments.insert_one(new_comment)
+
+		# Redirect to post with pending message
+		flash("Thank you for your comment! Your comment will be visible once it is reviewed and approved by an admin.")
+		return redirect(url_for("blog", _id=post["_id"]))
 
 # Project page
 @app.route("/projects")
