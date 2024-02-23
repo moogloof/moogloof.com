@@ -12,6 +12,6 @@ pymongo==3.11.2
 python-dateutil==2.8.1
 six==1.15.0
 typing_extensions==4.1.1
-uWSGI==2.0.19.1
+uWSGI==2.0.24
 Werkzeug==1.0.1
 zipp==3.7.0
