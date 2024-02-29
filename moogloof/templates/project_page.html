@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block headers %}
+<link rel="stylesheet" href="{{ url_for('static', filename='post.css') }}">
 {% endblock headers %}
 
 {% block content %}
@@ -18,21 +19,6 @@
 		</svg>
 	</a>
 	{% endif %}
+	<p class="content lh-base">{{ project.description|markdown }}</p>
 </div>
-{% for update in updates %}
-{% if update.important %}
-<div class="card h-100 bg-white text-black border-success w-50 mb-5" style="margin: 0 auto;">
-{% else %}
-<div class="card h-100 bg-white text-black w-50 mb-5" style="margin: 0 auto;">
-{% endif %}
-	<div class="card-header d-flex justify-content-between">
-		{{ update.header }}
-		<small class="text-muted">{{ timeago(update.date) }}</small>
-	</div>
-	<div class="card-body d-flex flex-column">
-		<h6 class="card-title">{{ update.title }}</h6>
-		<p class="card-text flex-grow-1">{{ update.description|markdown }}</p>
-	</div>
-</div>
-{% endfor %}
 {% endblock content %}
