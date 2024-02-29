@@ -10,7 +10,7 @@
 		<div class="card-body">
 			<h3 class="card-title">Projects</h3>
 			<ul class="my-0">
-				{% for project, important_update in projects %}
+				{% for project in projects %}
 				<li><a href="{{ url_for('projects', _id=project._id) }}">{{ project.title }}</a></li>
 				{% endfor %}
 			</ul>

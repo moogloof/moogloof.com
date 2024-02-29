@@ -293,16 +293,11 @@ def comment_blog(_id):
 @app.route("/projects")
 @app.route("/projects/<_id>")
 def projects(_id=None):
-	# Get updates
-	updates = get_db().moogloof.updates
-
-	# Get the project updates and the project
+	# Get the project and the project
 	projects_q = get_db().moogloof.projects
 
 	if not _id:
-		# Get most recent and important update if any
-		# Get 3 most recent udpates
-		projects_q = list(map(lambda x: [x, updates.find_one({"project": x["_id"], "important": True}, sort=[("date", pymongo.DESCENDING)])], projects_q.find()))
+		projects_q = projects_q.find()
 
 		# Render projects
 		return render_template("projects.html", header="projects", projects=projects_q)
@@ -312,12 +307,11 @@ def projects(_id=None):
 			project = projects_q.find_one({
 				"_id": ObjectId(_id)
 			})
-			proj_updates = updates.find({"project": ObjectId(_id)}, sort=[("date", pymongo.DESCENDING)])
 		except InvalidId:
 			abort(404)
 
-		# Render the project update list
-		return render_template("project_page.html", header="project page for {}".format(project["title"]), updates=proj_updates, project=project)
+		# Render the project
+		return render_template("project_page.html", header="project page for {}".format(project["title"]), project=project)
 
 # Create project page
 @app.route("/projects/create", methods=["GET", "POST"])
@@ -423,23 +417,6 @@ def edit_project(_id):
 	else:
 		# Return with error if not logged in
 		abort(403)
-
-# Updates page
-@app.route("/update/<_id>")
-def update(_id):
-	# Get the update
-	updates = get_db().moogloof.updates
-
-	# Get the thingy
-	try:
-		update_post = updates.find_one({
-			"_id": ObjectId(_id)
-		})
-	except InvalidId:
-		abort(404)
-
-	# Render update
-	return render_template("update.html", header="update", update=update_post)
 
 # Login page
 @app.route("/login", methods=["GET", "POST"])
