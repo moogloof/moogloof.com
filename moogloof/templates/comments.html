@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block headers %}
+{% endblock headers %}
+
+{% block content %}
+{% for comment in comments %}
+<div class="row mx-0">
+	<div class="card mt-5 px-0 col-lg-8 mx-auto shadow">
+		<div class="card-header justify-content-between d-flex">{{ timeago(comment.date) }}</div>
+		<div class="card-body">
+			{% if comment.website == '' %}
+			<h5 class="card-title">{{ comment.name }}</h5>
+			{% else %}
+			<a href="{{ comment.website }}"><h5 class="card-title">{{ comment.name }}</h5></a>
+			{% endif %}
+			<p class="card-text content lh-base">{{ comment.content }}</p>
+		</div>
+	</div>
+</div>
+{% endfor %}
+{% endblock content %}

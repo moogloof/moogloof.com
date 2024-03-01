@@ -57,10 +57,10 @@ def blog(_id=None):
 			abort(404)
 		else:
 			# Get comments corresponding to post
-			comments = db.moogloof.comments.find({"post": ObjectId(_id)}, sort=[("date", pymongo.ASCENDING)])
+			comments_q = db.moogloof.comments.find({"post": ObjectId(_id)}, sort=[("date", pymongo.ASCENDING)])
 
 			# Render post
-			return render_template("post.html", header=post["title"], post=post, comments=comments)
+			return render_template("post.html", header=post["title"], post=post, comments=comments_q)
 
 # Blog infinite scroll
 @app.route("/blog/load")
@@ -416,6 +416,23 @@ def edit_project(_id):
 			return render_template("project_edit.html", header="edit project", saved=saved)
 	else:
 		# Return with error if not logged in
+		abort(403)
+
+# Comment review page
+@app.route("/comments", methods=["GET", "POST"])
+def comments():
+	# Check if user is logged in
+	if "logged-id" in session and session["logged-id"] == LOGGED_ID:
+		# Get comments
+		comments_q = get_db().moogloof.comments.find().sort("date", -1)
+
+		# Check if changing comment status
+		if request.method == "POST":
+			pass
+
+		# Render the comments page template for admins
+		return render_template("comments.html", header="comments", comments=comments_q)
+	else:
 		abort(403)
 
 # Login page
