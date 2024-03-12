@@ -7,7 +7,16 @@
 {% for comment in comments %}
 <div class="row mx-0">
 	<div class="card mt-5 px-0 col-lg-8 mx-auto shadow">
-		<div class="card-header justify-content-between d-flex">{{ timeago(comment.date) }}</div>
+		<div class="card-header justify-content-between d-flex">{{ timeago(comment.date) }}
+			<div class="custom-control custom-switch">
+				{% if comment.approved %}
+				<input type="checkbox" class="custom-control-input" id="{{ comment._id }}" checked>
+				{% else %}
+				<input type="checkbox" class="custom-control-input" id="{{ comment._id }}">
+				{% endif %}
+				<label class="custom-control-label" for="{{ comment._id }}">visible</label>
+			</div>
+		</div>
 		<div class="card-body">
 			{% if comment.website == '' %}
 			<h5 class="card-title">{{ comment.name }}</h5>
@@ -19,4 +28,25 @@
 	</div>
 </div>
 {% endfor %}
+
+<script>
+$(document).ready(function() {
+	$("input").on("click", function() {
+		const this_state = $(this).prop("checked")
+		const check_element = this;
+
+		$.ajax({
+			method: "POST",
+			url: "{{ url_for('comments') }}",
+			dataType: "json",
+			data: {
+				id: $(this).prop("id"),
+				visible: this_state
+			}
+		}).fail(function (msg) {
+			$(check_element).prop("checked", !this_state)
+		})
+	})
+})
+</script>
 {% endblock content %}

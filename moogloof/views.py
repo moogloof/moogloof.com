@@ -423,12 +423,19 @@ def edit_project(_id):
 def comments():
 	# Check if user is logged in
 	if "logged-id" in session and session["logged-id"] == LOGGED_ID:
-		# Get comments
-		comments_q = get_db().moogloof.comments.find().sort("date", -1)
-
+		comments_q = get_db().moogloof.comments
 		# Check if changing comment status
 		if request.method == "POST":
-			pass
+			comment = comments_q.find_one({
+				"_id": ObjectId(request.form["id"])
+			})
+
+			comments_q.update_one({"_id": comment["_id"]}, {"$set": {"approved": request.form["visible"] == "true"}})
+
+			return app.response_class(response=json_util.dumps({}), status=200, mimetype='application/json')
+
+		# Get comments
+		comments_q = comments_q.find().sort("date", -1)
 
 		# Render the comments page template for admins
 		return render_template("comments.html", header="comments", comments=comments_q)
