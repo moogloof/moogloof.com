@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block headers %}
+{% endblock headers %}
+
+{% block content %}
+<div class="mb-5 container">
+	{% for prog in progs %}
+	<p><a href="{{ url_for('cs429_prog', _id=prog) }}">Prog {{ prog }}</a></p>
+	{% endfor %}
+</div>
+{% endblock content %}

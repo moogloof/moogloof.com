@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block headers %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.bootstrap_4.min.css">
+{% endblock headers %}
+
+{% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/widgets/widget-bootstrap.min.js"></script>
+<div class="container mt-4 mb-5">
+	<h2 class="mb-3">Performance Metrics</h2>
+	<table class="table table-bordered table-striped tablesorter">
+		<thead>
+			<tr>
+				<th class="sorter">ID</th>
+				<th class="sorter">Average Runtime (s)</th>
+				<th class="sorter">Average Success Runtime (s)</th>
+				<th class="sorter">Average Fail Runtime (s)</th>
+				<th class="sorter">Success Rate (%)</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for submit in submits %}
+			<tr>
+				<td>{{ submit['id'] }}</td>
+				<td>{{ submit['avg_runtime'] }}</td>
+				<td>{{ submit['avg_success_runtime'] }}</td>
+				<td>{{ submit['avg_fail_runtime'] }}</td>
+				<td>{{ submit['success_rate'] }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+<script>
+$(document).ready(function() {
+	$(".tablesorter").tablesorter({
+		theme: "bootstrap",
+		widgets: ["zebra"],
+		headerTemplate: "{content} {icon}",
+		widgets: ["uitheme"]
+	});
+});
+</script>
+{% endblock content %}

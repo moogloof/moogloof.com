@@ -1,12 +1,14 @@
 # Package imports
 from bson import json_util
 from bson.objectid import ObjectId
+from bs4 import BeautifulSoup
 from datetime import datetime, timezone
 from flask import render_template, session, redirect, url_for, request, abort, flash, jsonify
 from werkzeug.security import check_password_hash
 from bson.errors import InvalidId
 import pymongo
 import random
+import requests
 
 # App imports
 from moogloof.app import app
@@ -475,6 +477,70 @@ def logout():
 
 	# Render the logout page template
 	return render_template("logout.html", header="logout")
+
+# CS429 Page for the stuff
+@app.route("/cs429")
+def cs429():
+	progs = []
+	i = 1
+
+	while True:
+		prog_url = f"https://www.cs.utexas.edu/~gheith/cs429h_s25_p{i}.html"
+		check_prog = requests.get(prog_url)
+
+		if check_prog.status_code == 200:
+			progs.append(i)
+		else:
+			break
+
+		i += 1
+
+	return render_template("cs429.html", header="CS429 Stats", progs=progs)
+
+@app.route("/cs429/<_id>")
+def cs429_prog(_id):
+	prog_url = f"https://www.cs.utexas.edu/~gheith/cs429h_s25_p{_id}.html"
+	prog_content = BeautifulSoup(requests.get(prog_url).text, "html.parser")
+
+	prog_table = prog_content.find("table", class_="results")
+	prog_data = prog_content.find_all("tr")
+
+	prog_data = filter(lambda x: x.get("data-alias") is not None, prog_data)
+
+	submits = []
+
+	for student in prog_data:
+		passes = 0
+		fails = 0
+		total_pass_time = 0
+		total_fail_time = 0
+
+		student_data = student.find_all("td")
+
+		for datum in student_data:
+			datum_type = datum.get("class")
+
+			if datum_type is not None and "alias" not in datum_type and "row-pin" not in datum_type:
+				time_passed = float(datum.get("title").split()[-1][:-1])
+
+				if "pass" in datum_type:
+					total_pass_time += time_passed
+					passes += 1
+				else:
+					total_fail_time += time_passed
+					fails += 1
+
+		total_submits = passes + fails
+
+		submits.append({
+			"id": student.get("data-alias"),
+			"avg_runtime": ((total_pass_time + total_fail_time) / total_submits) if total_submits != 0 else "NaN",
+			"avg_success_runtime": (total_pass_time / passes) if passes != 0 else "NaN",
+			"avg_fail_runtime": (total_fail_time / fails) if fails != 0 else "NaN",
+			"success_rate": (passes / total_submits) if total_submits != 0 else "NaN"
+		})
+
+	return render_template("prog.html", header=f"CS429 Prog {_id}", submits=submits)
 
 # Error 404 page
 @app.errorhandler(404)
