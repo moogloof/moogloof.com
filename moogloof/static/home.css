@@ -1,4 +1,88 @@
+/* Base Font */
+:root {
+	font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
 .profile {
+	background: linear-gradient(145deg, #ffffff, #f0f0f0);
+	border: none;
+	transition: transform 0.2s ease-in-out;
+}
+
+.profile:hover {
+	transform: translateY(-5px);
+}
+
+.profile .card-body {
+	padding: 2rem;
+}
+
+.profile .card-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-bottom: 1rem;
+	background: linear-gradient(45deg, #ff4b4b, #ff6b6b);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+.profile .card-text {
+	font-size: 1.1rem;
+	color: #666;
+	margin-bottom: 1.5rem;
+	line-height: 1.6;
+}
+
+.profile .btn-danger {
+	padding: 0.5rem 1.5rem;
+	font-weight: 500;
+	border-radius: 25px;
+	transition: all 0.2s ease;
+	box-shadow: 0 2px 5px rgba(255, 75, 75, 0.2);
+}
+
+.profile .btn-danger:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(255, 75, 75, 0.3);
+}
+
+/* Social Icons Styling */
+.social-icons .card {
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	border: none;
+	background: white;
+}
+
+.social-icons .card:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.social-icons .card img {
+	transition: opacity 0.2s ease;
+	opacity: 0.8;
+}
+
+.social-icons .card:hover img {
+	opacity: 1;
+}
+
+/* Terminal Section */
+.terminal-card {
+	border: none;
+	border-radius: 10px;
+	background: #1a1a1a !important;
+}
+
+.terminal-card .card-body {
+	padding: 2rem;
+}
+
+code {
+	white-space: pre;
+	font-family: 'JetBrains Mono', 'Fira Code', monospace;
+	font-size: 0.95rem;
+	line-height: 1.6;
 }
 
 #blinking-text::after {
@@ -7,16 +91,17 @@
 	height: 1em;
 	background: #ffffff;
 	display: inline-block;
-	animation-name: blinking-cursor;
-	animation-duration: 1.5s;
-	animation-timing-function: steps(2);
-	animation-iteration-count: infinite;
+	animation: blinking-cursor 1s steps(2) infinite;
+	vertical-align: middle;
+	margin-left: 2px;
 }
 
 @keyframes blinking-cursor {
-	0% { opacity: 0; }
+	0%, 100% { opacity: 0; }
+	50% { opacity: 1; }
 }
 
-code {
-	white-space: pre;
+/* General Styles */
+.shadow {
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
 }

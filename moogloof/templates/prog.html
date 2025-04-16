@@ -2,43 +2,602 @@
 
 {% block headers %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.bootstrap_4.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+.pin-button {
+	cursor: pointer;
+	color: #ccc;
+	transition: color 0.2s;
+}
+.pin-button.pinned {
+	color: #ffd700;
+}
+.point-highlight {
+	animation: pulse 2s infinite;
+}
+@keyframes pulse {
+	0% { r: 6; }
+	50% { r: 10; }
+	100% { r: 6; }
+}
+.border-bottom-thick {
+	border-bottom: 2px solid #666 !important;
+}
+.nav-link.disabled {
+	color: #6c757d;
+	pointer-events: none;
+	cursor: default;
+}
+</style>
 {% endblock headers %}
 
 {% block content %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/widgets/widget-bootstrap.min.js"></script>
 <div class="container mt-4 mb-5">
-	<h2 class="mb-3">Performance Metrics</h2>
-	<table class="table table-bordered table-striped tablesorter">
-		<thead>
-			<tr>
-				<th class="sorter">ID</th>
-				<th class="sorter">Average Runtime (s)</th>
-				<th class="sorter">Average Success Runtime (s)</th>
-				<th class="sorter">Average Fail Runtime (s)</th>
-				<th class="sorter">Success Rate (%)</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for submit in submits %}
-			<tr>
-				<td>{{ submit['id'] }}</td>
-				<td>{{ submit['avg_runtime'] }}</td>
-				<td>{{ submit['avg_success_runtime'] }}</td>
-				<td>{{ submit['avg_fail_runtime'] }}</td>
-				<td>{{ submit['success_rate'] }}</td>
-			</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+	<nav class="nav nav-pills mb-3">
+		<a class="nav-link" href="{{ course_url }}">
+			<i class="fas fa-arrow-up"></i> Back to {{ course_name }}
+		</a>
+		{% if prev_prog %}
+		<a class="nav-link" href="{{ prev_prog.url }}">
+			<i class="fas fa-chevron-left"></i> {{ prev_prog.name }}
+		</a>
+		{% else %}
+		<span class="nav-link disabled">
+			<i class="fas fa-chevron-left"></i> Previous
+		</span>
+		{% endif %}
+		{% if next_prog %}
+		<a class="nav-link" href="{{ next_prog.url }}">
+			{{ next_prog.name }} <i class="fas fa-chevron-right"></i>
+		</a>
+		{% else %}
+		<span class="nav-link disabled">
+			Next <i class="fas fa-chevron-right"></i>
+		</span>
+		{% endif %}
+	</nav>
+	<h2 class="mb-3">Performance Metrics ({{ header }})</h2>
+	<div class="row">
+		<div class="col-12 mb-3">
+			<h5 class="text-center mb-2">Grade Distribution</h5>
+			<p class="text-center text-muted small mb-3">
+				Grades are determined by both clustering and minimum thresholds. 
+				Students must meet both their cluster's performance level AND minimum success rates (A: 85%, B: 70%, C: 50%).<br>
+				<strong>Note: This is not the final grade, but a fun prediction of what the grade will be. Don't take it too seriously! No matter how you do, your grade does not define you!</strong>
+			</p>
+			<div class="d-flex justify-content-center" id="gradeLegend">
+				<!-- Legend will be populated dynamically -->
+			</div>
+		</div>
+		<div class="col-md-6 mb-4">
+			<div class="mb-3">
+				<label for="binSizeControl" class="form-label">Bin Size: <span id="binSizeValue">0.1</span></label>
+				<input type="range" class="form-range" id="binSizeControl" 
+					min="0.02" max="0.2" step="0.02" value="0.1">
+			</div>
+			<canvas id="successRateHistogram"></canvas>
+		</div>
+		<div class="col-md-6 mb-4">
+			<canvas id="successRateScatter"></canvas>
+		</div>
+		<div id="pinnedTableContainer" style="display: none;" class="mb-3">
+			<h5>Pinned Rows</h5>
+			<table class="table table-bordered table-striped tablesorter" id="pinnedTable">
+				<thead>
+					<tr>
+						<th class="sorter-false text-center" data-sorter="false" style="width: 50px;">Pin</th>
+						<th class="sorter">ID</th>
+						<th class="sorter">Average Runtime (s)</th>
+						<th class="sorter">Average Success Runtime (s)</th>
+						<th class="sorter">Average Fail Runtime (s)</th>
+						<th class="sorter">Success Rate (%)</th>
+						<th class="sorter">Chosen Success Rate (%)</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+		<table class="table table-bordered table-striped tablesorter" id="mainTable">
+			<thead>
+				<tr>
+					<th class="sorter-false text-center" data-sorter="false" style="width: 50px;">Pin</th>
+					<th class="sorter">ID</th>
+					<th class="sorter">Average Runtime (s)</th>
+					<th class="sorter">Average Success Runtime (s)</th>
+					<th class="sorter">Average Fail Runtime (s)</th>
+					<th class="sorter">Success Rate (%)</th>
+					<th class="sorter">Chosen Success Rate (%)</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for submit in submits %}
+				<tr data-id="{{ submit['id'] }}">
+					<td class="text-center">
+						<i class="fas fa-thumbtack pin-button" role="button" title="Pin/Unpin"></i>
+					</td>
+					<td>{{ submit['id'] }}</td>
+					<td>{{ submit['avg_runtime'] }}</td>
+					<td>{{ submit['avg_success_runtime'] }}</td>
+					<td>{{ submit['avg_fail_runtime'] }}</td>
+					<td>{{ submit['success_rate'] }}</td>
+					<td>{{ submit['chosen_success_rate'] }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
 </div>
 <script>
 $(document).ready(function() {
-	$(".tablesorter").tablesorter({
+	// Initialize both tables with tablesorter
+	$("#mainTable, #pinnedTable").tablesorter({
 		theme: "bootstrap",
 		widgets: ["zebra"],
 		headerTemplate: "{content} {icon}",
 		widgets: ["uitheme"]
+	});
+
+	// Initialize pinnedStudents from localStorage
+	const storageKey = 'pinnedStudents_' + window.location.pathname;
+	let pinnedStudents;
+	try {
+		pinnedStudents = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
+	} catch (e) {
+		pinnedStudents = new Set();
+	}
+
+	// Function to save pinned students to localStorage
+	function savePinnedStudents() {
+		localStorage.setItem(storageKey, JSON.stringify([...pinnedStudents]));
+	}
+
+	// Function to move rows between tables
+	function moveRow(row, isPinning) {
+		const sourceTable = isPinning ? '#mainTable' : '#pinnedTable';
+		const targetTable = isPinning ? '#pinnedTable' : '#mainTable';
+		
+		// Clone the row and move it to the target table
+		const clonedRow = row.clone(true);
+		$(targetTable + ' tbody').append(clonedRow);
+		
+		// Remove from source table
+		row.remove();
+		
+		// Show/hide pinned table based on content
+		const pinnedRows = $('#pinnedTable tbody tr').length;
+		$('#pinnedTableContainer').toggle(pinnedRows > 0);
+		
+		// Update both tables
+		$("#mainTable, #pinnedTable").trigger('update');
+	}
+
+	// Handle pin clicks with event delegation
+	$('table tbody').on('click', '.pin-button', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		const row = $(this).closest('tr');
+		const studentId = row.data('id');
+		
+		if ($(this).hasClass('pinned')) {
+			$(this).removeClass('pinned');
+			pinnedStudents.delete(studentId);
+			moveRow(row, false);
+		} else {
+			$(this).addClass('pinned');
+			pinnedStudents.add(studentId);
+			moveRow(row, true);
+		}
+		
+		// Save to localStorage
+		savePinnedStudents();
+		
+		// Update scatter plot
+		updateScatterPlot();
+	});
+
+	// Initialize pinned rows from localStorage on page load
+	function initializePinnedRows() {
+		pinnedStudents.forEach(studentId => {
+			const row = $(`#mainTable tr[data-id="${studentId}"]`);
+			if (row.length) {
+				row.find('.pin-button').addClass('pinned');
+				moveRow(row, true);
+			}
+		});
+	}
+
+	// Call initialization after page is ready
+	initializePinnedRows();
+
+	// Get all success rates from both tables
+	function getAllTableData() {
+		return Array.from(document.querySelectorAll('#mainTable tbody tr, #pinnedTable tbody tr')).map(row => ({
+			id: row.cells[1].textContent,
+			chosenSuccessRate: parseFloat(row.cells[6].textContent)
+		}));
+	}
+
+	// Update the original tableData variable to use the new function
+	const tableData = getAllTableData();
+
+	// Filter out NaN values
+	const validData = tableData.filter(d => !isNaN(d.chosenSuccessRate));
+
+	// K-means clustering implementation
+	function kMeans(data, k, maxIterations = 100) {
+		// Initialize centroids randomly within the data range
+		const min = Math.min(...data);
+		const max = Math.max(...data);
+		let centroids = Array(k).fill().map(() => min + Math.random() * (max - min));
+		
+		for (let iter = 0; iter < maxIterations; iter++) {
+			// Assign points to nearest centroid
+			const clusters = Array(k).fill().map(() => []);
+			data.forEach(point => {
+				const distances = centroids.map(c => Math.abs(point - c));
+				const nearestCentroid = distances.indexOf(Math.min(...distances));
+				clusters[nearestCentroid].push(point);
+			});
+			
+			// Update centroids
+			const newCentroids = clusters.map(cluster => 
+				cluster.length > 0 ? cluster.reduce((a, b) => a + b) / cluster.length : 0
+			);
+			
+			// Check for convergence
+			if (centroids.every((c, i) => Math.abs(c - newCentroids[i]) < 0.0001)) {
+				break;
+			}
+			
+			centroids = newCentroids;
+		}
+		
+		return centroids.sort((a, b) => b - a); // Sort descending
+	}
+
+	// Absolute minimum thresholds for grades
+	const minThresholds = {
+		A: 0.85,  // Must pass at least 85% of tests for an A
+		B: 0.70,  // Must pass at least 70% of tests for a B
+		C: 0.50,  // Must pass at least 50% of tests for a C
+		DF: 0.00  // Below 50% is D/F
+	};
+
+	// Perform clustering
+	const rates = validData.map(d => d.chosenSuccessRate);
+	const centroids = kMeans(rates, 4);
+
+	// Define grade boundaries as midpoints between centroids
+	const clusterBoundaries = [
+		(centroids[0] + centroids[1]) / 2,
+		(centroids[1] + centroids[2]) / 2,
+		(centroids[2] + centroids[3]) / 2
+	];
+
+	const gradeColors = [
+		{ grade: 'A', background: 'rgba(76, 175, 80, 0.5)', border: 'rgba(76, 175, 80, 1)' },
+		{ grade: 'B', background: 'rgba(33, 150, 243, 0.5)', border: 'rgba(33, 150, 243, 1)' },
+		{ grade: 'C', background: 'rgba(255, 152, 0, 0.5)', border: 'rgba(255, 152, 0, 1)' },
+		{ grade: 'D/F', background: 'rgba(244, 67, 54, 0.5)', border: 'rgba(244, 67, 54, 1)' }
+	];
+
+	// Function to get color based on success rate
+	function getGradeColor(rate) {
+		// First check absolute minimum thresholds
+		if (rate < minThresholds.C) {
+			return { ...gradeColors[3], grade: 'D/F', boundary: `< ${(minThresholds.C * 100).toFixed(0)}%` };
+		}
+		
+		// Then consider clusters within the valid grade ranges
+		if (rate >= Math.max(minThresholds.A, clusterBoundaries[0])) {
+			return { ...gradeColors[0], grade: 'A', boundary: `≥ ${(minThresholds.A * 100).toFixed(0)}%` };
+		}
+		if (rate >= Math.max(minThresholds.B, clusterBoundaries[1])) {
+			return { ...gradeColors[1], grade: 'B', boundary: `≥ ${(minThresholds.B * 100).toFixed(0)}%` };
+		}
+		if (rate >= Math.max(minThresholds.C, clusterBoundaries[2])) {
+			return { ...gradeColors[2], grade: 'C', boundary: `≥ ${(minThresholds.C * 100).toFixed(0)}%` };
+		}
+		return { ...gradeColors[3], grade: 'D/F', boundary: `< ${(minThresholds.C * 100).toFixed(0)}%` };
+	}
+
+	// Calculate grade distributions for legend
+	const gradeDistribution = validData.reduce((acc, d) => {
+		const grade = getGradeColor(d.chosenSuccessRate).grade;
+		acc[grade] = (acc[grade] || 0) + 1;
+		return acc;
+	}, {});
+
+	// Update legend with grade boundaries and distributions
+	const legendHtml = [
+		{
+			grade: 'A',
+			threshold: minThresholds.A,
+			color: gradeColors[0]
+		},
+		{
+			grade: 'B',
+			threshold: minThresholds.B,
+			color: gradeColors[1]
+		},
+		{
+			grade: 'C',
+			threshold: minThresholds.C,
+			color: gradeColors[2]
+		},
+		{
+			grade: 'D/F',
+			threshold: 0,
+			color: gradeColors[3]
+		}
+	].map(info => {
+		const count = gradeDistribution[info.grade] || 0;
+		const percentage = ((count / validData.length) * 100).toFixed(1);
+		let boundaryText;
+		
+		if (info.grade === 'D/F') {
+			boundaryText = `< ${(minThresholds.C * 100).toFixed(0)}%`;
+		} else {
+			boundaryText = `≥ ${(info.threshold * 100).toFixed(0)}%`;
+		}
+		
+		return `
+			<div class="legend-item mx-2">
+				<span class="badge" style="background-color: ${info.color.background}">●</span>
+				${info.grade} (${boundaryText}) - ${percentage}% of class
+			</div>
+		`;
+	}).join('');
+	$('#gradeLegend').html(legendHtml);
+
+	// Sort data by chosen success rate for better visualization
+	validData.sort((a, b) => a.chosenSuccessRate - b.chosenSuccessRate);
+
+	// Calculate vertical positions for points to show density
+	const maxSpread = 0.3; // Maximum vertical spread
+	const binWidth = 0.05; // Width of bins for density calculation
+	const bins = {};
+
+	// Group points into bins
+	validData.forEach(d => {
+		const binIndex = Math.floor(d.chosenSuccessRate / binWidth);
+		if (!bins[binIndex]) {
+			bins[binIndex] = [];
+		}
+		bins[binIndex].push(d);
+	});
+
+	// Calculate vertical positions within each bin
+	const pointData = validData.map(d => {
+		const binIndex = Math.floor(d.chosenSuccessRate / binWidth);
+		const binPoints = bins[binIndex];
+		const pointIndex = binPoints.indexOf(d);
+		const totalPoints = binPoints.length;
+		
+		let yPos;
+		if (totalPoints === 1) {
+			yPos = 0;
+		} else {
+			const spread = Math.min(maxSpread, totalPoints * 0.05);
+			yPos = spread * (2 * pointIndex / (totalPoints - 1) - 1);
+		}
+
+		const colors = getGradeColor(d.chosenSuccessRate);
+
+		return {
+			x: d.chosenSuccessRate,
+			y: yPos,
+			id: d.id,
+			backgroundColor: colors.background,
+			borderColor: colors.border,
+			grade: colors.grade,
+			radius: 6,  // Default radius
+			isPinned: false  // Track pin state
+		};
+	});
+
+	let scatterChart = null;
+
+	function updateScatterPlot() {
+		// Update point properties based on pin state
+		pointData.forEach(point => {
+			point.isPinned = pinnedStudents.has(point.id);
+			point.radius = point.isPinned ? 8 : 6;
+			point.borderWidth = point.isPinned ? 3 : 1;
+		});
+
+		// If chart exists, destroy it
+		if (scatterChart) {
+			scatterChart.destroy();
+		}
+
+		// Create scatter plot with updated data
+		scatterChart = new Chart(document.getElementById('successRateScatter'), {
+			type: 'scatter',
+			data: {
+				datasets: [{
+					label: 'Student Performance',
+					data: pointData,
+					backgroundColor: pointData.map(p => p.backgroundColor),
+					borderColor: pointData.map(p => p.borderColor),
+					borderWidth: pointData.map(p => p.borderWidth),
+					pointRadius: pointData.map(p => p.radius),
+					pointHoverRadius: pointData.map(p => p.radius + 2)
+				}]
+			},
+			options: {
+				responsive: true,
+				plugins: {
+					title: {
+						display: true,
+						text: 'Distribution of Chosen Success Rates',
+						font: {
+							size: 16
+						}
+					},
+					tooltip: {
+						callbacks: {
+							label: function(context) {
+								const point = context.raw;
+								return [
+									`Student: ${point.id}`,
+									`Chosen Success Rate: ${(point.x * 100).toFixed(1)}%`,
+									`Predicted Grade: ${point.grade}`,
+									point.isPinned ? '📌 Pinned' : ''
+								].filter(Boolean);
+							}
+						}
+					}
+				},
+				scales: {
+					x: {
+						type: 'linear',
+						position: 'bottom',
+						title: {
+							display: true,
+							text: 'Chosen Success Rate'
+						},
+						ticks: {
+							callback: value => value.toFixed(2)
+						}
+					},
+					y: {
+						display: true,
+						title: {
+							display: false
+						},
+						min: -0.4,
+						max: 0.4,
+						ticks: {
+							display: false
+						},
+						grid: {
+							display: false
+						}
+					}
+				}
+			}
+		});
+	}
+
+	// Initialize scatter plot
+	updateScatterPlot();
+
+	// Get all chosen success rates for histogram
+	const successRates = validData.map(d => d.chosenSuccessRate);
+
+	let histogramChart = null;
+
+	function updateHistogram(binSize) {
+		// Calculate number of bins needed to cover 0-1 range
+		const numBins = Math.ceil(1 / binSize);
+		const bins = Array(numBins).fill(0);
+		const binColors = Array(numBins).fill(null).map(() => ({
+			background: [],
+			border: []
+		}));
+		
+		// Get total number of rows
+		const totalRows = $('#mainTable tbody tr, #pinnedTable tbody tr').length;
+		
+		// Count rows in each bin
+		const allRows = $('#mainTable tbody tr, #pinnedTable tbody tr');
+		allRows.each(function() {
+			const rate = parseFloat($(this).find('td:eq(6)').text()); // Chosen Success Rate column
+			if (!isNaN(rate)) {
+				const binIndex = Math.min(Math.floor(rate / binSize), numBins - 1);
+				bins[binIndex]++;
+				const colors = getGradeColor(rate);
+				binColors[binIndex].background.push(colors.background);
+				binColors[binIndex].border.push(colors.border);
+			}
+		});
+
+		// Calculate average colors for each bin
+		const finalColors = binColors.map(bin => {
+			if (bin.background.length === 0) return {
+				background: 'rgba(200, 200, 200, 0.5)',
+				border: 'rgba(200, 200, 200, 1)'
+			};
+			return {
+				background: bin.background[Math.floor(bin.background.length / 2)],
+				border: bin.border[Math.floor(bin.border.length / 2)]
+			};
+		});
+
+		// Create labels for the bins
+		const labels = bins.map((_, index) => 
+			`${(index * binSize).toFixed(2)}-${((index + 1) * binSize).toFixed(2)}`
+		);
+
+		// If chart exists, destroy it
+		if (histogramChart) {
+			histogramChart.destroy();
+		}
+
+		// Create the histogram
+		histogramChart = new Chart(document.getElementById('successRateHistogram'), {
+			type: 'bar',
+			data: {
+				labels: labels,
+				datasets: [{
+					label: 'Number of Students',
+					data: bins,
+					backgroundColor: finalColors.map(c => c.background),
+					borderColor: finalColors.map(c => c.border),
+					borderWidth: 1
+				}]
+			},
+			options: {
+				responsive: true,
+				plugins: {
+					title: {
+						display: true,
+						text: 'Distribution of Chosen Test Success Rates',
+						font: {
+							size: 16
+						}
+					},
+					legend: {
+						display: false
+					}
+				},
+				scales: {
+					y: {
+						beginAtZero: true,
+						max: totalRows, // Set max to total number of rows
+						title: {
+							display: true,
+							text: 'Number of Students'
+						},
+						ticks: {
+							stepSize: Math.max(1, Math.floor(totalRows / 10)), // Adjust step size based on total rows
+							precision: 0 // Force whole numbers
+						}
+					},
+					x: {
+						title: {
+							display: true,
+							text: 'Success Rate Range'
+						}
+					}
+				}
+			}
+		});
+	}
+
+	// Initialize histogram with default bin size
+	updateHistogram(0.1);
+
+	// Update histogram when bin size changes
+	$('#binSizeControl').on('input', function() {
+		const binSize = parseFloat(this.value);
+		$('#binSizeValue').text(binSize.toFixed(2));
+		updateHistogram(binSize);
 	});
 });
 </script>

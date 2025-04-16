@@ -479,13 +479,13 @@ def logout():
 	return render_template("logout.html", header="logout")
 
 # CS429 Page for the stuff
-@app.route("/cs429")
-def cs429():
+@app.route("/gheith/<course_id>")
+def cs429(course_id):
 	progs = []
 	i = 1
 
 	while True:
-		prog_url = f"https://www.cs.utexas.edu/~gheith/cs429h_s25_p{i}.html"
+		prog_url = f"https://www.cs.utexas.edu/~gheith/{course_id}_p{i}.html"
 		check_prog = requests.get(prog_url)
 
 		if check_prog.status_code == 200:
@@ -495,11 +495,11 @@ def cs429():
 
 		i += 1
 
-	return render_template("cs429.html", header="CS429 Stats", progs=progs)
+	return render_template("cs429.html", header="CS429 Stats", progs=progs, course_id=course_id)
 
-@app.route("/cs429/<_id>")
-def cs429_prog(_id):
-	prog_url = f"https://www.cs.utexas.edu/~gheith/cs429h_s25_p{_id}.html"
+@app.route("/gheith/prog/<course_id>/<_id>")
+def cs429_prog(course_id, _id):
+	prog_url = f"https://www.cs.utexas.edu/~gheith/{course_id}_p{_id}.html"
 	prog_content = BeautifulSoup(requests.get(prog_url).text, "html.parser")
 
 	prog_table = prog_content.find("table", class_="results")
@@ -508,10 +508,13 @@ def cs429_prog(_id):
 	prog_data = filter(lambda x: x.get("data-alias") is not None, prog_data)
 
 	submits = []
+	tests = {}
 
 	for student in prog_data:
 		passes = 0
+		chosen_passes = 0
 		fails = 0
+		chosen_fails = 0
 		total_pass_time = 0
 		total_fail_time = 0
 
@@ -526,21 +529,60 @@ def cs429_prog(_id):
 				if "pass" in datum_type:
 					total_pass_time += time_passed
 					passes += 1
+					if "chosen" in datum_type:
+						chosen_passes += 1
 				else:
 					total_fail_time += time_passed
 					fails += 1
+					if "chosen" in datum_type:
+						chosen_fails += 1
 
 		total_submits = passes + fails
 
+		stu_id = student.get("data-alias")
 		submits.append({
-			"id": student.get("data-alias"),
+			"id": stu_id,
 			"avg_runtime": ((total_pass_time + total_fail_time) / total_submits) if total_submits != 0 else "NaN",
 			"avg_success_runtime": (total_pass_time / passes) if passes != 0 else "NaN",
 			"avg_fail_runtime": (total_fail_time / fails) if fails != 0 else "NaN",
-			"success_rate": (passes / total_submits) if total_submits != 0 else "NaN"
+			"success_rate": (passes / total_submits) if total_submits != 0 else "NaN",
+			"chosen_success_rate": (chosen_passes / (chosen_fails + chosen_passes)) if chosen_fails + chosen_passes != 0 else "NaN"
 		})
 
-	return render_template("prog.html", header=f"CS429 Prog {_id}", submits=submits)
+	# Check for previous and next progs
+	prog_id = int(_id)
+	prev_prog = None
+	next_prog = None
+
+	# Check previous prog
+	if prog_id > 1:
+		prev_url = f"https://www.cs.utexas.edu/~gheith/{course_id}_p{prog_id-1}.html"
+		prev_check = requests.get(prev_url)
+		if prev_check.status_code == 200:
+			prev_prog = {
+				'url': url_for('cs429_prog', course_id=course_id, _id=prog_id-1),
+				'name': f'Prog {prog_id-1}'
+			}
+
+	# Check next prog
+	next_url = f"https://www.cs.utexas.edu/~gheith/{course_id}_p{prog_id+1}.html"
+	next_check = requests.get(next_url)
+	if next_check.status_code == 200:
+		next_prog = {
+			'url': url_for('cs429_prog', course_id=course_id, _id=prog_id+1),
+			'name': f'Prog {prog_id+1}'
+		}
+
+	return render_template(
+		"prog.html",
+		header=f"{ course_id } Prog {_id}",
+		submits=submits,
+		tests=tests,
+		course_url=url_for('cs429', course_id=course_id),
+		course_name=course_id,
+		prev_prog=prev_prog,
+		next_prog=next_prog
+	)
 
 # Error 404 page
 @app.errorhandler(404)

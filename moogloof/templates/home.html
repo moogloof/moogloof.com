@@ -2,52 +2,54 @@
 
 {% block headers %}
 <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
 {% endblock headers %}
 
 {% block content %}
-<div class="row mt-5 mx-0 mb-5">
-	<div class="col-5 pl-0 pr-3">
-		<div class="card profile shadow">
-			<div class="card-body">
-				<h3 class="card-title">moogloof</h3>
-				<p class="card-text">{{ random_phrase }}</p>
-				<a href="mailto:ethansyun@icloud.com" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Click!">Contact Me</a>
-			</div>
-		</div>
-		<div class="row mt-4 mx-0">
-			<div class="card p-2 shadow overflow-hidden col-2">
-				<img src="{{ url_for('static', filename='Github-Logo.png') }}" class="card-img" alt="github logo">
-				<div class="card-img-overlay">
-					<a class="stretched-link" href="https://github.com/moogloof"></a>
-				</div>
-			</div>
-			<div class="card p-2 shadow overflow-hidden col-2 ml-3">
-				<img src="{{ url_for('static', filename='LinkedIn-Logo.png') }}" class="card-img" alt="linkedin logo">
-				<div class="card-img-overlay">
-					<a class="stretched-link" href="https://www.linkedin.com/in/moogloof/"></a>
-				</div>
-			</div>
-			<div class="card p-2 shadow overflow-hidden col-2 ml-3" data-toggle="tooltip" data-placement="top" title="moogloof#3195">
-				<img src="{{ url_for('static', filename='Discord-Logo.svg') }}" class="card-img" alt="discord logo">
-				<div class="card-img-overlay">
-					<a class="stretched-link" href="#"></a>
-				</div>
-			</div>
-			<div class="card p-2 shadow overflow-hidden col-2 ml-3" data-toggle="tooltip" data-placement="top" title="ethansyun@icloud.com">
-				<img src="{{ url_for('static', filename='Email-Logo.png') }}" class="card-img" alt="email logo">
-				<div class="card-img-overlay">
-					<a class="stretched-link" href="mailto:ethansyun@icloud.com"></a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="card bg-dark col ml-3 shadow px-0">
-		<div class="card-body overflow-auto">
-<code class="text-wrap text-white"><span class="text-muted">~$</span> cat bio.txt<br>
+<div class="container">
+	<div class="row mt-5 mx-0 mb-5">
+		<div class="card terminal-card col mr-3 shadow px-0">
+			<div class="card-body overflow-auto">
+				<code class="text-wrap text-white"><span class="text-muted">~$</span> cat bio.txt<br>
 I'm currently studying <span class="text-warning">CS</span> at <span class="text-danger">UT Austin</span>. Currently working on loofOS. I have plans to convert my old and beaten raspberry pi into a network switch. My hobbies are primarily cycling and trying new analog horror games.<br>
 <span id="blinking-text" class="text-muted">~$ </span></code>
+			</div>
+		</div>
+		<div class="col pl-0 pr-3">
+			<div class="card profile shadow">
+				<div class="card-body">
+					<h3 class="card-title">moogloof</h3>
+					<p class="card-text">{{ random_phrase }}</p>
+					<a href="mailto:ethansyun@icloud.com" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Click!">Contact Me</a>
+				</div>
+			</div>
+			<div class="row mt-4 mx-0 social-icons">
+				<div class="card p-2 shadow overflow-hidden col-2">
+					<img src="{{ url_for('static', filename='Github-Logo.png') }}" class="card-img" alt="github logo">
+					<div class="card-img-overlay">
+						<a class="stretched-link" href="https://github.com/moogloof"></a>
+					</div>
+				</div>
+				<div class="card p-2 shadow overflow-hidden col-2 ml-3">
+					<img src="{{ url_for('static', filename='LinkedIn-Logo.png') }}" class="card-img" alt="linkedin logo">
+					<div class="card-img-overlay">
+						<a class="stretched-link" href="https://www.linkedin.com/in/moogloof/"></a>
+					</div>
+				</div>
+				<div class="card p-2 shadow overflow-hidden col-2 ml-3" data-toggle="tooltip" data-placement="top" title="moogloof#3195">
+					<img src="{{ url_for('static', filename='Discord-Logo.svg') }}" class="card-img" alt="discord logo">
+					<div class="card-img-overlay">
+						<a class="stretched-link" href="#"></a>
+					</div>
+				</div>
+				<div class="card p-2 shadow overflow-hidden col-2 ml-3" data-toggle="tooltip" data-placement="top" title="ethansyun@icloud.com">
+					<img src="{{ url_for('static', filename='Email-Logo.png') }}" class="card-img" alt="email logo">
+					<div class="card-img-overlay">
+						<a class="stretched-link" href="mailto:ethansyun@icloud.com"></a>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
-
 {% endblock content %}
