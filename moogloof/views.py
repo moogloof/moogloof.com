@@ -444,6 +444,34 @@ def comments():
 	else:
 		abort(403)
 
+@app.route("/comments/<_id>/delete", methods=["POST"])
+def delete_comment(_id):
+	# Check if user is logged in
+	if "logged-id" in session and session["logged-id"] == LOGGED_ID:
+		# Get the comments collection
+		comments = get_db().moogloof.comments
+
+		# Get comment with matching id
+		try:
+			comment = comments.find_one({
+				"_id": ObjectId(_id)
+			})
+		except InvalidId:
+			abort(404)
+
+		if not comment:
+			# No comment with id exists
+			abort(404)
+		else:
+			# Delete comment
+			comments.delete_one({"_id": ObjectId(_id)})
+
+			# Return success response
+			return app.response_class(response=json_util.dumps({"success": True}), status=200, mimetype='application/json')
+	else:
+		# Return with error if not logged in
+		abort(403)
+
 # Login page
 @app.route("/login", methods=["GET", "POST"])
 def login():
