@@ -1,12 +1,61 @@
 {% extends 'base.html' %}
 
+{% block headers %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+.error-container {
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    border: none;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+}
+.error-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, #ff4b4b, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.error-content {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+.error-content .btn-outline-primary {
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    border-radius: 25px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(13, 110, 253, 0.2);
+}
+.error-content .btn-outline-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+}
+</style>
+{% endblock headers %}
+
 {% block content %}
-<div class="row">
-	<div class="card col-lg-8 shadow mx-auto my-5">
-		<div class="card-body">
-			<h3 class="card-title">403</h3>
-			<p class="card-text">W-What are you doing here onii-chan?</p>
-		</div>
-	</div>
+<div class="container">
+    <div class="row mt-5 mx-0 mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="error-container">
+                <h1 class="error-title">403</h1>
+                <div class="error-content">
+                    <p>Access Denied</p>
+                    <p>Turn around, nothing to see here.</p>
+                    <p class="mt-4">
+                        <a href="{{ url_for('home') }}" class="btn btn-outline-primary">Return Home</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock content %} 
